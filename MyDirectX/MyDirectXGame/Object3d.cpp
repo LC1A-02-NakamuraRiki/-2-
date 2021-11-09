@@ -15,8 +15,8 @@ using namespace std;
 /// 静的メンバ変数の実体
 /// </summary>
 
-ID3D12Device *Object3d::device = nullptr;
-ID3D12GraphicsCommandList *Object3d::cmdList = nullptr;
+ID3D12Device* Object3d::device = nullptr;
+ID3D12GraphicsCommandList* Object3d::cmdList = nullptr;
 ComPtr<ID3D12RootSignature> Object3d::rootsignature;
 ComPtr<ID3D12PipelineState> Object3d::pipelinestate;
 XMMATRIX Object3d::matView{};
@@ -26,7 +26,7 @@ XMFLOAT3 Object3d::target = { 0, 0, 0 };
 XMFLOAT3 Object3d::up = { 0, 1, 0 };
 
 
-bool Object3d::StaticInitialize(ID3D12Device *device, int window_width, int window_height)
+bool Object3d::StaticInitialize(ID3D12Device* device, int window_width, int window_height)
 {
 	Object3d::device = device;
 
@@ -41,7 +41,7 @@ bool Object3d::StaticInitialize(ID3D12Device *device, int window_width, int wind
 	return true;
 }
 
-void Object3d::PreDraw(ID3D12GraphicsCommandList *cmdList)
+void Object3d::PreDraw(ID3D12GraphicsCommandList* cmdList)
 {
 	// コマンドリストをセット
 	Object3d::cmdList = cmdList;
@@ -58,9 +58,9 @@ void Object3d::PostDraw()
 	Object3d::cmdList = nullptr;
 }
 
-Object3d *Object3d::Create()
+Object3d* Object3d::Create()
 {
-	Object3d *object3d = new Object3d();
+	Object3d* object3d = new Object3d();
 	if (object3d == nullptr) {
 		return nullptr;
 	}
@@ -68,11 +68,11 @@ Object3d *Object3d::Create()
 	float scale_val = 5;
 	object3d->scale = { scale_val, scale_val, scale_val };
 	// 初期化
-		if (!object3d->Initialize()) {
-			delete object3d;
-			assert(0);
-			return nullptr;
-		}
+	if (!object3d->Initialize()) {
+		delete object3d;
+		assert(0);
+		return nullptr;
+	}
 	return object3d;
 }
 
@@ -95,16 +95,26 @@ void Object3d::CameraMoveVector(XMFLOAT3 move)
 	XMFLOAT3 eye_moved = GetEye();
 	XMFLOAT3 target_moved = GetTarget();
 
-	eye_moved.x += move.x;
+	/*eye_moved.x += move.x;
 	eye_moved.y += move.y;
 	eye_moved.z += move.z;
 
 	target_moved.x += move.x;
 	target_moved.y += move.y;
-	target_moved.z += move.z;
+	target_moved.z += move.z;*/
 
-	SetEye(eye_moved);
-	SetTarget(target_moved);
+	//XMVECTOR v0 = { 0, 0, -50, 0 };
+	////angleラジアンだけy軸まわりに回転。半径は-100
+	//XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(move.x));
+	//XMVECTOR v = XMVector3TransformNormal(v0, rotM);
+	//XMVECTOR bossTarget = { position.x,  position.y,  position.z };
+	//XMVECTOR v3 = bossTarget + v;
+	//XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+	//target = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
+	//eye = f;
+
+	SetEye(eye);
+	SetTarget(target);
 }
 
 void Object3d::CameraMoveEyeVector(XMFLOAT3 move)
@@ -169,7 +179,7 @@ bool Object3d::InitializeGraphicsPipeline()
 		std::string errstr;
 		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char *)errorBlob->GetBufferPointer(),
+		std::copy_n((char*)errorBlob->GetBufferPointer(),
 			errorBlob->GetBufferSize(),
 			errstr.begin());
 		errstr += "\n";
@@ -218,7 +228,7 @@ bool Object3d::InitializeGraphicsPipeline()
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; //標準設定
 	blenddesc.BlendEnable = true;                 //ブレンドを有効にする
 	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;  //加算
-	blenddesc.SrcBlend= D3D12_BLEND_SRC_ALPHA;   //ソースの値を100%使う
+	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;   //ソースの値を100%使う
 	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA; //デストの値を  0%使う
 
 	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
@@ -322,8 +332,8 @@ void Object3d::Update()
 	}
 
 	//定数バッファへデータ転送
-	ConstBufferData *constMap = nullptr;
-	result = constBuff->Map(0, nullptr, (void **)&constMap);
+	ConstBufferData* constMap = nullptr;
+	result = constBuff->Map(0, nullptr, (void**)&constMap);
 	constMap->mat = matWorld * matView * matProjection;	// 行列の合成
 	constBuff->Unmap(0, nullptr);
 }
