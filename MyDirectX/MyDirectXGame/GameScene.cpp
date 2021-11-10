@@ -86,6 +86,17 @@ void GameScene::Update()
 		playerObj->SetPosition(position);
 	}
 
+	//XMFLOAT3 position = playerObj->GetPosition();
+	//XMVECTOR v0 = { 0, 0, -50, 0 };
+	////angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
+	//XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(move.x));
+	//XMVECTOR v = XMVector3TransformNormal(v0, rotM);
+	//XMVECTOR bossTarget = { position.x,  position.y,  position.z };
+	//XMVECTOR v3 = bossTarget + v;
+	//XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+	//target = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
+	//eye = f;
+
 	// ƒJƒƒ‰ˆÚ“®
 	if (input->PushKey(DIK_W) || input->PushKey(DIK_S) || input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{

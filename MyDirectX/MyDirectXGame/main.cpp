@@ -28,6 +28,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		assert(0);
 		return 1;
 	}
+
+	if (!input->mouseInitialize(win->GetHInstance(), win->GetHwnd())) {
+		assert(0);
+		return 1;
+	}
 	// オーディオの初期化
 	audio = new Audio();
 	if (!audio->Initialize()) {
@@ -59,6 +64,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		// 入力関連の毎フレーム処理
 		input->Update();
+		input->MouseUpdate();
 		// ゲームシーンの毎フレーム処理
 		gameScene->Update();
 

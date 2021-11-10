@@ -10,13 +10,21 @@ private:
 
 public:
 	bool Initialize(HINSTANCE hInstance, HWND hwnd);
+	bool mouseInitialize(HINSTANCE hInstance, HWND hwnd);
 
 	void Update();
+	void MouseUpdate();
 	bool PushKey(BYTE keyNumber);
+	bool PushMouse(int MouseNumber);
 	bool TriggerKey(BYTE keyNumber);
+	bool TriggerMouse(int MouseNumber);
 private:
 	ComPtr<IDirectInput8> dinput;
 	ComPtr<IDirectInputDevice8> devkeyboard;
 	BYTE keyPre[256] = {};
 	BYTE key[256] = {};
+
+	ComPtr<IDirectInputDevice8> devMouse;
+	DIMOUSESTATE mouse = { 0 };
+	DIMOUSESTATE oldMouse = { 0 };
 };

@@ -95,23 +95,13 @@ void Object3d::CameraMoveVector(XMFLOAT3 move)
 	XMFLOAT3 eye_moved = GetEye();
 	XMFLOAT3 target_moved = GetTarget();
 
-	/*eye_moved.x += move.x;
+	eye_moved.x += move.x;
 	eye_moved.y += move.y;
 	eye_moved.z += move.z;
 
 	target_moved.x += move.x;
 	target_moved.y += move.y;
-	target_moved.z += move.z;*/
-
-	//XMVECTOR v0 = { 0, 0, -50, 0 };
-	////angleÉâÉWÉAÉìÇæÇØyé≤Ç‹ÇÌÇËÇ…âÒì]ÅBîºåaÇÕ-100
-	//XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(move.x));
-	//XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-	//XMVECTOR bossTarget = { position.x,  position.y,  position.z };
-	//XMVECTOR v3 = bossTarget + v;
-	//XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
-	//target = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
-	//eye = f;
+	target_moved.z += move.z;
 
 	SetEye(eye);
 	SetTarget(target);
