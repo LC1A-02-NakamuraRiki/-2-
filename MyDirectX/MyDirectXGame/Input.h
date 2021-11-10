@@ -3,14 +3,16 @@
 #include<wrl.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include<dinput.h>
+#include"WinApp.h"
 class Input
 {
 private:
 	template <class T>using ComPtr = Microsoft::WRL::ComPtr<T>;
-
+	//WindowAPI
+	WinApp* winApp = nullptr;
 public:
 	bool Initialize(HINSTANCE hInstance, HWND hwnd);
-	bool mouseInitialize(HINSTANCE hInstance, HWND hwnd);
+	void MouseInitialize(WinApp* winApp);
 
 	void Update();
 	void MouseUpdate();

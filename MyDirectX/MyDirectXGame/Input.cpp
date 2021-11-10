@@ -20,7 +20,7 @@ bool Input::Initialize(HINSTANCE hInstance, HWND hwnd)
 	return true;
 }
 
-bool Input::mouseInitialize(HINSTANCE hInstance, HWND hwnd)
+void Input::MouseInitialize(WinApp* winApp)
 {
 	HRESULT result;
 	//マウスデバイス生成
@@ -28,8 +28,7 @@ bool Input::mouseInitialize(HINSTANCE hInstance, HWND hwnd)
 	//入力データ形式のセット
 	result = devMouse->SetDataFormat(&c_dfDIMouse);
 	//排他制御レベルのセット
-	result = devMouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
-	return false;
+	result = devMouse->SetCooperativeLevel(winApp->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 }
 
 void Input::Update()
