@@ -91,19 +91,7 @@ void GameScene::Update()
 		// 座標の変更を反映
 
 	}
-	if (BulletFlag == false) {
-		if (input->TriggerKey(DIK_SPACE)) {
-			//カメラのポジション＝弾のポジション
-
-			BulletFlag = true;
-		}
-	}
-	else if (BulletFlag == true) {
-		position.x++;
-		if (position.x > 90) {
-			BulletFlag == false;
-		}
-	}
+	
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 
 	// カメラ移動
@@ -121,11 +109,26 @@ void GameScene::Update()
 		XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 		cameraEye = f;
+		position = f;
 
 		Object3d::SetTarget(cameraTarget);
 		Object3d::SetEye(cameraEye);
+
 	}
 
+	if (BulletFlag == false) {
+		if (input->TriggerKey(DIK_SPACE)) {
+			BulletFlag = true;
+		}
+	}
+
+	if (BulletFlag == true) {
+		//position.x++;
+		position.z++;
+		if (position.x > position.x + 900) {
+			BulletFlag = false;
+		}
+	}
 	// カメラ移動
 	//if (input->PushKey(DIK_Q) || input->PushKey(DIK_E) || input->PushKey(DIK_LCONTROL) || input->PushKey(DIK_SPACE))
 	//{
