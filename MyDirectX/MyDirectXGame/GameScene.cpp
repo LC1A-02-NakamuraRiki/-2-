@@ -99,8 +99,6 @@ void GameScene::Update()
 		if (input->PushKey(DIK_D)) { angle += 5.0f; }
 		else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
 
-		float angleY = mousePos.y;
-
 		XMVECTOR v0 = { 0, 0, -50, 0 };
 		//angleƒ‰ƒWƒAƒ“‚¾‚¯y²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
 		XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
