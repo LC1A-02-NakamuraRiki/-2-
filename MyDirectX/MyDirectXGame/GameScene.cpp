@@ -99,7 +99,7 @@ void GameScene::Update()
 		if (input->PushKey(DIK_D)) { angle += 5.0f; }
 		else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
 
-		XMVECTOR v0 = { 0, 0, -50, 0 };
+		XMVECTOR v0 = { 0, 0, -30, 0 };
 		//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
 		XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
 		XMVECTOR v = XMVector3TransformNormal(v0, rotM);
@@ -121,6 +121,20 @@ void GameScene::Update()
 		if (input->PushKey(DIK_E)) { Object3d::CameraMoveEyeVector({ +1.0f,0.0f,0.0f }); }
 		else if (input->PushKey(DIK_Q)) { Object3d::CameraMoveEyeVector({ -1.0f,0.0f,0.0f }); }
 	}
+
+	float mouseAngle = mousePos.y;
+	XMVECTOR v0 = { 0, 0, -30, 0 };
+	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
+	XMMATRIX rotM = XMMatrixRotationX(XMConvertToRadians(mouseAngle));
+	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
+	XMVECTOR bossTarget2 = { position2.x,  position2.y,  position2.z };
+	XMVECTOR v3 = bossTarget2 + v;
+	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+	cameraTarget = { bossTarget2.m128_f32[0], bossTarget2.m128_f32[1], bossTarget2.m128_f32[2] };
+	cameraEye = f;
+
+	Object3d::SetTarget(cameraTarget);
+	Object3d::SetEye(cameraEye);
 
 	playerObj->Update();
 	playerObj2->Update();
