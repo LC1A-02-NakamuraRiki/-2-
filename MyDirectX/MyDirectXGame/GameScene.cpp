@@ -69,6 +69,8 @@ void GameScene::Update()
 	debugText.Print("EyeMove:W A S D", 20, 50, 1.5f);
 	debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 80, 1.5f);
 	
+	POINT mousePos;
+	GetCursorPos(&mousePos);
 
 	// オブジェクト移動
 	if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
