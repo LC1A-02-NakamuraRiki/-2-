@@ -75,11 +75,12 @@ void GameScene::Update()
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
+	XMFLOAT3 position = playerObj->GetPosition();
 	// オブジェクト移動
 	if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
 	{
 		// 現在の座標を取得
-		XMFLOAT3 position = playerObj->GetPosition();
+		
 
 		// 移動後の座標を計算
 		if (input->PushKey(DIK_UP)) { position.y += 1.0f; }
@@ -88,9 +89,21 @@ void GameScene::Update()
 		else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
 
 		// 座標の変更を反映
-		playerObj->SetPosition(position);
-	}
 
+	}
+	if (BulletFlag == false) {
+		if (input->TriggerKey(DIK_SPACE)) {
+			//カメラのポジション＝弾のポジション
+
+			BulletFlag = true;
+		}
+	}
+	else if (BulletFlag == true) {
+		position.x++;
+		if (position.x > 90) {
+			BulletFlag == false;
+		}
+	}
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 
 	// カメラ移動
@@ -114,28 +127,16 @@ void GameScene::Update()
 	}
 
 	// カメラ移動
-	if (input->PushKey(DIK_Q) || input->PushKey(DIK_E) || input->PushKey(DIK_LCONTROL) || input->PushKey(DIK_SPACE))
-	{
-		if (input->PushKey(DIK_SPACE)) { Object3d::CameraMoveEyeVector({ 0.0f,+1.0f,0.0f }); }
-		else if (input->PushKey(DIK_LCONTROL)) { Object3d::CameraMoveEyeVector({ 0.0f,-1.0f,0.0f }); }
-		if (input->PushKey(DIK_E)) { Object3d::CameraMoveEyeVector({ +1.0f,0.0f,0.0f }); }
-		else if (input->PushKey(DIK_Q)) { Object3d::CameraMoveEyeVector({ -1.0f,0.0f,0.0f }); }
-	}
+	//if (input->PushKey(DIK_Q) || input->PushKey(DIK_E) || input->PushKey(DIK_LCONTROL) || input->PushKey(DIK_SPACE))
+	//{
+	//	if (input->PushKey(DIK_SPACE)) { Object3d::CameraMoveEyeVector({ 0.0f,+1.0f,0.0f }); }
+	//	else if (input->PushKey(DIK_LCONTROL)) { Object3d::CameraMoveEyeVector({ 0.0f,-1.0f,0.0f }); }
+	//	if (input->PushKey(DIK_E)) { Object3d::CameraMoveEyeVector({ +1.0f,0.0f,0.0f }); }
+	//	else if (input->PushKey(DIK_Q)) { Object3d::CameraMoveEyeVector({ -1.0f,0.0f,0.0f }); }
+	//}
 
-	float mouseAngle = mousePos.y;
-	XMVECTOR v0 = { 0, 0, -30, 0 };
-	//angleラジアンだけy軸まわりに回転。半径は-100
-	XMMATRIX rotM = XMMatrixRotationX(XMConvertToRadians(mouseAngle));
-	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-	XMVECTOR bossTarget2 = { position2.x,  position2.y,  position2.z };
-	XMVECTOR v3 = bossTarget2 + v;
-	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
-	cameraTarget = { bossTarget2.m128_f32[0], bossTarget2.m128_f32[1], bossTarget2.m128_f32[2] };
-	cameraEye = f;
 
-	Object3d::SetTarget(cameraTarget);
-	Object3d::SetEye(cameraEye);
-
+	playerObj->SetPosition(position);
 	playerObj->Update();
 	playerObj2->Update();
 
@@ -167,7 +168,9 @@ void GameScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
-	playerObj->Draw();
+	if (BulletFlag == true) {
+		playerObj->Draw();
+	}
 	playerObj2->Draw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
