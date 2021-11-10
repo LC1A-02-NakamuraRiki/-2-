@@ -70,5 +70,8 @@ private: // ƒƒ“ƒo•Ï”
 
 	Object3d *playerObj2 = nullptr;
 	Model *playerModel2 = nullptr;
+
+public:
+	float angle = 0.0f;
 };
 

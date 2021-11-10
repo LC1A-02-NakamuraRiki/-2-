@@ -56,11 +56,11 @@ void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
 	playerModel = playerModel2->CreateFromObject("untitled");
 	playerObj2 = Object3d::Create();
 	playerObj2->LinkModel(playerModel);
-	playerObj2->SetPosition({ 5.0f, 0.0f, -20.0f });
+	playerObj2->SetPosition({ 0.0f, 0.0f, 0.0f });
 	playerObj2->SetScale({ 1.0f,1.0f,1.0f });
 	playerObj2->Update();
 	//ƒTƒEƒ“ƒhÄ¶
-	audio->PlayWave("Resources/Alarm01.wav");
+	//audio->PlayWave("Resources/Alarm01.wav");
 }
 
 void GameScene::Update()
@@ -93,24 +93,30 @@ void GameScene::Update()
 
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 
-	float angle = 1;
-	XMVECTOR v0 = { 0, 0, -50, 0 };
-	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
-	XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
-	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-	XMVECTOR bossTarget = { position2.x,  position2.y,  position2.z };
-	XMVECTOR v3 = bossTarget + v;
-	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
-	cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
-	cameraEye = f;
-
 	// ƒJƒƒ‰ˆÚ“®
-	if (input->PushKey(DIK_W) || input->PushKey(DIK_S) || input->PushKey(DIK_D) || input->PushKey(DIK_A))
+	if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
-		if (input->PushKey(DIK_W)) { Object3d::CameraMoveVector({ 0.0f,+1.0f,0.0f }); }
-		else if (input->PushKey(DIK_S)) { Object3d::CameraMoveVector({ 0.0f,-1.0f,0.0f }); }
-		if (input->PushKey(DIK_D)) { angle += 1; }
-		else if (input->PushKey(DIK_A)) { angle -= 1; }
+		if (input->PushKey(DIK_D)) { angle += 5.0f; }
+		else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
+
+		float angleY = mousePos.y;
+
+		XMVECTOR v0 = { 0, 0, -50, 0 };
+		//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
+		XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
+		XMVECTOR v = XMVector3TransformNormal(v0, rotM);
+		XMVECTOR bossTarget = { position2.x,  position2.y,  position2.z };
+		XMVECTOR v3 = bossTarget + v;
+		XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
+		cameraEye = f;
+
+		//angleƒ‰ƒWƒAƒ“‚¾‚¯YŽ²‚Ü‚í‚è‚É‰ñ“], ”¼Œa‚Í-100
+		/*cameraEye.x = -100 * sinf(angle);
+		cameraEye.z = -100 * cosf(angle);*/
+
+		Object3d::SetTarget(cameraTarget);
+		Object3d::SetEye(cameraEye);
 	}
 
 	// ƒJƒƒ‰ˆÚ“®
@@ -125,8 +131,6 @@ void GameScene::Update()
 	playerObj->Update();
 	playerObj2->Update();
 
-	Object3d::SetTarget(cameraTarget);
-	Object3d::SetEye(cameraEye);
 }
 
 void GameScene::Draw()
