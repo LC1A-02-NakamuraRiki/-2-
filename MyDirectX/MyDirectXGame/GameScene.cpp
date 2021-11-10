@@ -109,10 +109,6 @@ void GameScene::Update()
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 		cameraEye = f;
 
-		//angleƒ‰ƒWƒAƒ“‚¾‚¯YŽ²‚Ü‚í‚è‚É‰ñ“], ”¼Œa‚Í-100
-		/*cameraEye.x = -100 * sinf(angle);
-		cameraEye.z = -100 * cosf(angle);*/
-
 		Object3d::SetTarget(cameraTarget);
 		Object3d::SetEye(cameraEye);
 	}
