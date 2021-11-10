@@ -68,6 +68,9 @@ void GameScene::Update()
 	debugText.Print("ObjectMove:ArrowKey", 20, 20, 1.5f);
 	debugText.Print("EyeMove:W A S D", 20, 50, 1.5f);
 	debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 80, 1.5f);
+
+	XMFLOAT3 cameraTarget = Object3d::GetTarget();
+	XMFLOAT3 cameraEye = Object3d::GetEye();
 	
 	POINT mousePos;
 	GetCursorPos(&mousePos);
@@ -88,24 +91,26 @@ void GameScene::Update()
 		playerObj->SetPosition(position);
 	}
 
-	//XMFLOAT3 position = playerObj->GetPosition();
-	//XMVECTOR v0 = { 0, 0, -50, 0 };
-	////angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
-	//XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(move.x));
-	//XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-	//XMVECTOR bossTarget = { position.x,  position.y,  position.z };
-	//XMVECTOR v3 = bossTarget + v;
-	//XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
-	//target = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
-	//eye = f;
+	XMFLOAT3 position2 = playerObj2->GetPosition();
+
+	float angle = 1;
+	XMVECTOR v0 = { 0, 0, -50, 0 };
+	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
+	XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
+	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
+	XMVECTOR bossTarget = { position2.x,  position2.y,  position2.z };
+	XMVECTOR v3 = bossTarget + v;
+	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+	cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
+	cameraEye = f;
 
 	// ƒJƒƒ‰ˆÚ“®
 	if (input->PushKey(DIK_W) || input->PushKey(DIK_S) || input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
 		if (input->PushKey(DIK_W)) { Object3d::CameraMoveVector({ 0.0f,+1.0f,0.0f }); }
 		else if (input->PushKey(DIK_S)) { Object3d::CameraMoveVector({ 0.0f,-1.0f,0.0f }); }
-		if (input->PushKey(DIK_D)) { Object3d::CameraMoveVector({ +1.0f,0.0f,0.0f }); }
-		else if (input->PushKey(DIK_A)) { Object3d::CameraMoveVector({ -1.0f,0.0f,0.0f }); }
+		if (input->PushKey(DIK_D)) { angle += 1; }
+		else if (input->PushKey(DIK_A)) { angle -= 1; }
 	}
 
 	// ƒJƒƒ‰ˆÚ“®
@@ -119,6 +124,9 @@ void GameScene::Update()
 
 	playerObj->Update();
 	playerObj2->Update();
+
+	Object3d::SetTarget(cameraTarget);
+	Object3d::SetEye(cameraEye);
 }
 
 void GameScene::Draw()
