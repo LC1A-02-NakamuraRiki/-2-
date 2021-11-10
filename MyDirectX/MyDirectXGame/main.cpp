@@ -29,10 +29,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		return 1;
 	}
 
-	if (!input->mouseInitialize(win->GetHInstance(), win->GetHwnd())) {
-		assert(0);
-		return 1;
-	}
+	input->MouseInitialize(win);
 	// オーディオの初期化
 	audio = new Audio();
 	if (!audio->Initialize()) {
