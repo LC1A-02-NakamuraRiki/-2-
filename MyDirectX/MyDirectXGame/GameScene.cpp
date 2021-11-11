@@ -1,10 +1,13 @@
 #include "GameScene.h"
 #include <cassert>
+#include<math.h>
 
 using namespace DirectX;
 
 GameScene::GameScene()
 {
+	rat = 0;
+	speed = 5;
 }
 
 GameScene::~GameScene()
@@ -93,6 +96,13 @@ void GameScene::Update()
 	}
 	
 	XMFLOAT3 position2 = playerObj2->GetPosition();
+	XMVECTOR v0 = { 0, 0, -30, 0 };
+	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
+	XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
+	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
+	XMVECTOR bossTarget = { position2.x,  position2.y,  position2.z };
+	XMVECTOR v3 = bossTarget + v;
+	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
 
 	// ƒJƒƒ‰ˆÚ“®
 	if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
@@ -100,13 +110,7 @@ void GameScene::Update()
 		if (input->PushKey(DIK_D)) { angle += 5.0f; }
 		else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
 
-		XMVECTOR v0 = { 0, 0, -30, 0 };
-		//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
-		XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
-		XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-		XMVECTOR bossTarget = { position2.x,  position2.y,  position2.z };
-		XMVECTOR v3 = bossTarget + v;
-		XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+		
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 		cameraEye = f;
 		position = f;
@@ -123,9 +127,20 @@ void GameScene::Update()
 	}
 
 	if (BulletFlag == true) {
-		//position.x++;
-		position.z++;
-		if (position.x > position.x + 900) {
+
+		position.x += speed;
+		position.z += speed;
+		float lengthX = position.x - position2.x;
+		float lengthZ = position.z - position2.z;
+
+		float length = sqrt((lengthX * lengthX) + (lengthZ * lengthZ));
+
+		position.x = lengthX / length * speed;
+		position.z = lengthZ / length * speed;
+
+		if (position.x >= position2.x && position.z >= position2.z)
+		{
+			position = f;
 			BulletFlag = false;
 		}
 	}

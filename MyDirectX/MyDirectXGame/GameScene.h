@@ -74,5 +74,7 @@ private: // ƒƒ“ƒo•Ï”
 public:
 	float angle = 0.0f;
 	bool BulletFlag = false;
+	float rat;
+	float speed;
 };
 
