@@ -148,6 +148,7 @@ void GameScene::Update()
 	if (BulletFlag == false) {
 		if (input->TriggerKey(DIK_SPACE)) {
 			BulletFlag = true;
+			frame = 0;
 		}
 	}
 
@@ -155,13 +156,12 @@ void GameScene::Update()
 		if (frame >= 0 && frame <= maxframe) {
 			frame++;
 			x = static_cast<float>(frame) / static_cast<float>(maxframe);
-			position.x = f.x + (position2.x - f.x) * (sin(x * PI / 2));
-			position.z = f.z + (position2.z - f.z) * (sin(x * PI / 2));
+			position.x = f.x + ((position2.x - 5.48) - f.x) * (sin(x * PI / 2));
+			position.z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
 
 		}
 
 		if (frame > maxframe) {
-			frame = 0;
 			BulletFlag = false;
 		}
 	}
