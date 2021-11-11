@@ -71,6 +71,8 @@ private: // ƒƒ“ƒo•Ï”
 	Object3d *playerObj2 = nullptr;
 	Model *playerModel2 = nullptr;
 
+	Object3d *skydomeObj = nullptr;
+	Model *skydomeModel = nullptr;
 public:
 	float angle = 0.0f;
 	bool BulletFlag;
@@ -78,5 +80,8 @@ public:
 	float maxframe;
 	float x;
 	float PI = 3.141592;
+
+	float slowValue = 1.0f;
+	bool isSlow = 0;
 };
 
