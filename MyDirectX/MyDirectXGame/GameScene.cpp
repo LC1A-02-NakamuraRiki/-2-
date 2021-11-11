@@ -152,7 +152,7 @@ void GameScene::Update()
 				BulletFlag[i] = true;
 				frame = 0;
 				position[i].x = f.x;
-				position[i].z = f.z - 1000;
+				position[i].z = f.z;
 				shotTimer = 0;
 			}
 		}
