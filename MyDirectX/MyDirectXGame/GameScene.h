@@ -73,6 +73,10 @@ private: // ƒƒ“ƒo•Ï”
 
 public:
 	float angle = 0.0f;
-	bool BulletFlag = false;
+	bool BulletFlag;
+	float frame;
+	float maxframe;
+	float x;
+	float PI = 3.141592;
 };
 
