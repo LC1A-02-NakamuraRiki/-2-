@@ -56,21 +56,47 @@ void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
 	playerObj->SetScale({ 1.0f,1.0f,1.0f });
 	playerObj->Update();
 
-	playerModel = playerModel2->CreateFromObject("untitled");
+	playerModel = playerModel2->CreateFromObject("temp");
 	playerObj2 = Object3d::Create();
 	playerObj2->LinkModel(playerModel);
-	playerObj2->SetPosition({ 0.0f, 0.0f, 0.0f });
-	playerObj2->SetScale({ 1.0f,1.0f,1.0f });
+	playerObj2->SetPosition({ +5.48f, -10.0f, +8.8f });
+	playerObj2->SetScale({ 4.0f,4.0f,4.0f });
 	playerObj2->Update();
+
+	skydomeModel = skydomeModel->CreateFromObject("skydome");
+	skydomeObj = Object3d::Create();
+	skydomeObj->LinkModel(skydomeModel);
+	skydomeObj->SetScale({ 5.0f,5.0f,5.0f });
+	skydomeObj->Update();
 	//サウンド再生
 	//audio->PlayWave("Resources/Alarm01.wav");
 }
 
 void GameScene::Update()
 {
-	debugText.Print("ObjectMove:ArrowKey", 20, 20, 1.5f);
-	debugText.Print("EyeMove:W A S D", 20, 50, 1.5f);
-	debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 80, 1.5f);
+	//debugText.Print("ObjectMove:ArrowKey", 20, 20, 1.5f);
+	//debugText.Print("EyeMove:W A S D", 20, 50, 1.5f);
+	//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 80, 1.5f);
+
+	if (input->PushKey(DIK_1) || input->PushKey(DIK_2))
+	{
+		if (input->PushKey(DIK_1))
+		{
+			isSlow = 1;
+		}
+		if (input->PushKey(DIK_2))
+		{
+			isSlow = 0;
+		}
+	}
+	if (isSlow == 1 && slowValue > 0.0625)
+	{
+		slowValue -= 0.03125;
+	}
+	else if (isSlow == 0 && slowValue < 1.0)
+	{
+		slowValue += 0.03125;
+	}
 
 	XMFLOAT3 cameraTarget = Object3d::GetTarget();
 	XMFLOAT3 cameraEye = Object3d::GetEye();
@@ -96,11 +122,11 @@ void GameScene::Update()
 	}
 	
 	XMFLOAT3 position2 = playerObj2->GetPosition();
-	XMVECTOR v0 = { 0, 0, -30, 0 };
+	XMVECTOR v0 = { 0, 0, -20, 0 };
 	//angleラジアンだけy軸まわりに回転。半径は-100
 	XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
 	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-	XMVECTOR bossTarget = { position2.x,  position2.y,  position2.z };
+	XMVECTOR bossTarget = { position2.x - 5.48,  position2.y + 10,  position2.z - 8.8 };
 	XMVECTOR v3 = bossTarget + v;
 	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
 
@@ -148,11 +174,14 @@ void GameScene::Update()
 	//	else if (input->PushKey(DIK_Q)) { Object3d::CameraMoveEyeVector({ -1.0f,0.0f,0.0f }); }
 	//}
 
+	float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
+	cameraTarget.y = XMConvertToRadians(mouseAngle);
+	Object3d::SetTarget(cameraTarget);
 
 	playerObj->SetPosition(position);
 	playerObj->Update();
 	playerObj2->Update();
-
+	skydomeObj->Update();
 }
 
 void GameScene::Draw()
@@ -181,6 +210,7 @@ void GameScene::Draw()
 	Object3d::PreDraw(cmdList);
 
 	// 3Dオブクジェクトの描画
+	skydomeObj->Draw();
 	if (BulletFlag == true) {
 		playerObj->Draw();
 	}
