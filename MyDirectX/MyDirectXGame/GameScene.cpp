@@ -129,19 +129,18 @@ void GameScene::Update()
 	XMVECTOR bossTarget = { position2.x - 5.48,  position2.y + 10,  position2.z - 8.8 };
 	XMVECTOR v3 = bossTarget + v;
 	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+	cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
+	cameraEye = f;
+	position = f;
+
+	Object3d::SetTarget(cameraTarget);
+	Object3d::SetEye(cameraEye);
 
 	// ƒJƒƒ‰ˆÚ“®
 	if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
 		if (input->PushKey(DIK_D)) { angle += 5.0f * slowValue; }
 		else if (input->PushKey(DIK_A)) { angle -= 5.0f * slowValue; }
-		
-		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
-		cameraEye = f;
-		position = f;
-
-		Object3d::SetTarget(cameraTarget);
-		Object3d::SetEye(cameraEye);
 
 	}
 
