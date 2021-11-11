@@ -7,7 +7,7 @@ using namespace DirectX;
 GameScene::GameScene()
 {
 	rat = 0;
-	speed = 5;
+	speed = 2;
 }
 
 GameScene::~GameScene()
@@ -20,7 +20,7 @@ GameScene::~GameScene()
 	safe_delete(playerObj2);
 }
 
-void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
+void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 {
 	// nullptrチェック
 	assert(dxCommon);
@@ -48,11 +48,11 @@ void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	// 3Dオブジェクト生成
 
-	
+
 	playerModel = playerModel->CreateFromObject("largeCarL");
 	playerObj = Object3d::Create();
 	playerObj->LinkModel(playerModel);
-	playerObj->SetPosition({-5.0f, 0.0f, -20.0f });
+	playerObj->SetPosition({ -5.0f, 0.0f, -20.0f });
 	playerObj->SetScale({ 1.0f,1.0f,1.0f });
 	playerObj->Update();
 
@@ -74,7 +74,7 @@ void GameScene::Update()
 
 	XMFLOAT3 cameraTarget = Object3d::GetTarget();
 	XMFLOAT3 cameraEye = Object3d::GetEye();
-	
+
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
@@ -83,18 +83,16 @@ void GameScene::Update()
 	if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
 	{
 		// 現在の座標を取得
-		
+
 
 		// 移動後の座標を計算
-		if (input->PushKey(DIK_UP)) { position.y += 1.0f; }
-		else if (input->PushKey(DIK_DOWN)) { position.y -= 1.0f; }
-		if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; }
-		else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
+		if (input->PushKey(DIK_UP)) { position.y += 1.0f; } else if (input->PushKey(DIK_DOWN)) { position.y -= 1.0f; }
+		if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; } else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
 
 		// 座標の変更を反映
 
 	}
-	
+
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 	XMVECTOR v0 = { 0, 0, -30, 0 };
 	//angleラジアンだけy軸まわりに回転。半径は-100
@@ -107,10 +105,9 @@ void GameScene::Update()
 	// カメラ移動
 	if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
-		if (input->PushKey(DIK_D)) { angle += 5.0f; }
-		else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
+		if (input->PushKey(DIK_D)) { angle += 5.0f; } else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
 
-		
+
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 		cameraEye = f;
 		position = f;
@@ -127,16 +124,25 @@ void GameScene::Update()
 	}
 
 	if (BulletFlag == true) {
-
-		position.x += speed;
-		position.z += speed;
-		float lengthX = position.x - position2.x;
-		float lengthZ = position.z - position2.z;
+		float lengthX = position2.x - position.x;
+		float lengthZ = position2.z - position.z;
 
 		float length = sqrt((lengthX * lengthX) + (lengthZ * lengthZ));
 
-		position.x = lengthX / length * speed;
-		position.z = lengthZ / length * speed;
+		float X = lengthX / length;
+		float Z = lengthZ / length;
+		float speedX = (lengthX / length) * speed;
+		float speedZ = (lengthZ / length) * speed;
+
+		if (speedX * Z - speedZ * X > 0)
+		{
+			rat = 0.05;
+		}
+
+		if (speedX * Z - speedZ * X < 0)
+		{
+			rat = -0.05;
+		}
 
 		if (position.x >= position2.x && position.z >= position2.z)
 		{
@@ -163,7 +169,7 @@ void GameScene::Update()
 void GameScene::Draw()
 {
 	// コマンドリストの取得
-	ID3D12GraphicsCommandList *cmdList = dxCommon->GetCommandList();
+	ID3D12GraphicsCommandList* cmdList = dxCommon->GetCommandList();
 
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
