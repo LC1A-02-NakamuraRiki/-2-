@@ -49,11 +49,11 @@ void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
 	// 3Dオブジェクト生成
 
 	
-	playerModel = playerModel->CreateFromObject("largeCarL");
+	playerModel = playerModel->CreateFromObject("bullet");
 	playerObj = Object3d::Create();
 	playerObj->LinkModel(playerModel);
 	playerObj->SetPosition({-5.0f, 0.0f, -20.0f });
-	playerObj->SetScale({ 1.0f,1.0f,1.0f });
+	playerObj->SetScale({ 0.5f,0.5f,0.5f });
 	playerObj->Update();
 
 	playerModel = playerModel2->CreateFromObject("temp");
@@ -133,8 +133,8 @@ void GameScene::Update()
 	// カメラ移動
 	if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
-		if (input->PushKey(DIK_D)) { angle += 5.0f; }
-		else if (input->PushKey(DIK_A)) { angle -= 5.0f; }
+		if (input->PushKey(DIK_D)) { angle += 5.0f * slowValue; }
+		else if (input->PushKey(DIK_A)) { angle -= 5.0f * slowValue; }
 		
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 		cameraEye = f;
