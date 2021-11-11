@@ -5,22 +5,32 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
-	BulletFlag = false;
+	for (int i = 0; i < 20; i++)
+	{
+		BulletFlag[20] = false;
+	}
+
 	frame = 0;
 	maxframe = 100;
+	shotTimer = 120;
+	maxshotTimer = 120;
 }
 
 GameScene::~GameScene()
 {
 	safe_delete(spriteBG);
 	safe_delete(playerModel);
-	safe_delete(playerObj);
+	for (int i = 0; i < 20; i++)
+	{
+		safe_delete(playerObj[20]);
+	}
+
 
 	safe_delete(playerModel2);
 	safe_delete(playerObj2);
 }
 
-void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
+void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 {
 	// nullptrチェック
 	assert(dxCommon);
@@ -48,13 +58,16 @@ void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	// 3Dオブジェクト生成
 
-	
+
 	playerModel = playerModel->CreateFromObject("bullet");
-	playerObj = Object3d::Create();
-	playerObj->LinkModel(playerModel);
-	playerObj->SetPosition({-5.0f, 0.0f, -20.0f });
-	playerObj->SetScale({ 0.5f,0.5f,0.5f });
-	playerObj->Update();
+	for (int i = 0; i < 20; i++)
+	{
+		playerObj[i] = Object3d::Create();
+		playerObj[i]->LinkModel(playerModel);
+		playerObj[i]->SetPosition({ -5.0f, 0.0f, -100.0f });
+		playerObj[i]->SetScale({ 0.5f,0.5f,0.5f });
+		playerObj[i]->Update();
+	}
 
 	playerModel = playerModel2->CreateFromObject("temp");
 	playerObj2 = Object3d::Create();
@@ -74,6 +87,7 @@ void GameScene::Initialize(DirectXCommon *dxCommon, Input *input, Audio *audio)
 
 void GameScene::Update()
 {
+	maxshotTimer++;
 	//debugText.Print("ObjectMove:ArrowKey", 20, 20, 1.5f);
 	//debugText.Print("EyeMove:W A S D", 20, 50, 1.5f);
 	//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 80, 1.5f);
@@ -92,35 +106,23 @@ void GameScene::Update()
 	if (isSlow == 1 && slowValue > 0.0625)
 	{
 		slowValue -= 0.03125;
-	}
-	else if (isSlow == 0 && slowValue < 1.0)
+	} else if (isSlow == 0 && slowValue < 1.0)
 	{
 		slowValue += 0.03125;
 	}
 
 	XMFLOAT3 cameraTarget = Object3d::GetTarget();
 	XMFLOAT3 cameraEye = Object3d::GetEye();
-	
+
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
-	XMFLOAT3 position = playerObj->GetPosition();
-	// オブジェクト移動
-	if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
+	XMFLOAT3 position[20];
+	for (int i = 0; i < 20; i++)
 	{
-		// 現在の座標を取得
-		
-
-		// 移動後の座標を計算
-		if (input->PushKey(DIK_UP)) { position.y += 1.0f; }
-		else if (input->PushKey(DIK_DOWN)) { position.y -= 1.0f; }
-		if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; }
-		else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
-
-		// 座標の変更を反映
-
+		position[i] = playerObj[i]->GetPosition();
 	}
-	
+
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 	XMVECTOR v0 = { 0, 0, -20, 0 };
 	//angleラジアンだけy軸まわりに回転。半径は-100
@@ -131,7 +133,6 @@ void GameScene::Update()
 	XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
 	cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 	cameraEye = f;
-	position = f;
 
 	Object3d::SetTarget(cameraTarget);
 	Object3d::SetEye(cameraEye);
@@ -139,31 +140,37 @@ void GameScene::Update()
 	// カメラ移動
 	if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 	{
-		if (input->PushKey(DIK_D)) { angle += 5.0f * slowValue; }
-		else if (input->PushKey(DIK_A)) { angle -= 5.0f * slowValue; }
+		if (input->PushKey(DIK_D)) { angle += 5.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle -= 5.0f * slowValue; }
 
 	}
 
-	if (BulletFlag == false) {
-		if (input->TriggerKey(DIK_SPACE)) {
-			BulletFlag = true;
-			frame = 0;
+	for (int i = 0; i < 20; i++)
+	{
+
+		if (input->PushKey(DIK_SPACE)) {
+			if (BulletFlag[i] == false) {
+				BulletFlag[i] = true;
+				frame = 0;
+				position[i].x = f.x;
+				position[i].z = f.z - 1000;
+				shotTimer = 0;
+			}
+		}
+
+		if (BulletFlag[i] == true) {
+			shotTimer++;
+			if (frame >= 0 && frame <= maxframe && shotTimer >= maxshotTimer) {
+				x = static_cast<float>(frame) / static_cast<float>(maxframe);
+				position[i].x = f.x + ((position2.x - 5.48) - f.x) * (sin(x * PI / 2));
+				position[i].z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
+
+			}
+			if (frame > maxframe) {
+				BulletFlag[i] = false;
+			}
 		}
 	}
 
-	if (BulletFlag == true) {
-		if (frame >= 0 && frame <= maxframe) {
-			frame++;
-			x = static_cast<float>(frame) / static_cast<float>(maxframe);
-			position.x = f.x + ((position2.x - 5.48) - f.x) * (sin(x * PI / 2));
-			position.z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
-
-		}
-
-		if (frame > maxframe) {
-			BulletFlag = false;
-		}
-	}
 	// カメラ移動
 	//if (input->PushKey(DIK_Q) || input->PushKey(DIK_E) || input->PushKey(DIK_LCONTROL) || input->PushKey(DIK_SPACE))
 	//{
@@ -177,16 +184,23 @@ void GameScene::Update()
 	cameraTarget.y = XMConvertToRadians(mouseAngle);
 	Object3d::SetTarget(cameraTarget);
 
-	playerObj->SetPosition(position);
-	playerObj->Update();
+	for (int i = 0; i < 20; i++)
+	{
+		playerObj[i]->SetPosition(position[i]);
+		playerObj[i]->Update();
+	}
 	playerObj2->Update();
 	skydomeObj->Update();
+	char str[256];
+	sprintf_s(str, "%f, %f", frame, shotTimer);
+	debugText.Print(str, 20, 20, 1.5f);
+	frame++;
 }
 
 void GameScene::Draw()
 {
 	// コマンドリストの取得
-	ID3D12GraphicsCommandList *cmdList = dxCommon->GetCommandList();
+	ID3D12GraphicsCommandList* cmdList = dxCommon->GetCommandList();
 
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
@@ -210,9 +224,13 @@ void GameScene::Draw()
 
 	// 3Dオブクジェクトの描画
 	skydomeObj->Draw();
-	if (BulletFlag == true) {
-		playerObj->Draw();
+	for (int i = 0; i < 20; i++)
+	{
+		if (BulletFlag[i] == true) {
+			playerObj[i]->Draw();
+		}
 	}
+
 	playerObj2->Draw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる

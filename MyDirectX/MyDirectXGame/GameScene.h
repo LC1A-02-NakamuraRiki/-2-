@@ -65,7 +65,7 @@ private: // ƒƒ“ƒo•Ï”
 	/// </summary>
 	Sprite *spriteBG = nullptr;
 	
-	Object3d *playerObj = nullptr;
+	Object3d* playerObj[20] = { nullptr };
 	Model *playerModel = nullptr;
 
 	Object3d *playerObj2 = nullptr;
@@ -74,8 +74,10 @@ private: // ƒƒ“ƒo•Ï”
 	Object3d *skydomeObj = nullptr;
 	Model *skydomeModel = nullptr;
 public:
+	bool BulletFlag[20];
+	float shotTimer;
+	float maxshotTimer;
 	float angle = 0.0f;
-	bool BulletFlag;
 	float frame;
 	float maxframe;
 	float x;
