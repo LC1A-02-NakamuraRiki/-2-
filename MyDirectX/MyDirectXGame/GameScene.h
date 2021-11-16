@@ -68,6 +68,9 @@ private: // ÉÅÉìÉoïœêî
 	Object3d* playerObj[20] = { nullptr };
 	Model *playerModel = nullptr;
 
+	Object3d* EnemyBullet[20] = { nullptr };
+	Model* EnemyBulletModel = nullptr;
+
 	Object3d *playerObj2 = nullptr;
 	Model *playerModel2 = nullptr;
 
@@ -85,5 +88,9 @@ public:
 
 	float slowValue = 1.0f;
 	bool isSlow = 0;
+
+	bool EnemyBulletFlag;
+	float EnemyBulletFrame;
+	float EnemyBulletMaxframe;
 };
 

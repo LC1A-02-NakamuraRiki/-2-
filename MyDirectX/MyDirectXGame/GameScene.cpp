@@ -7,11 +7,18 @@ GameScene::GameScene()
 {
 	for (int i = 0; i < 20; i++)
 	{
-		BulletFlag[20] = false;
+		BulletFlag[i] = false;
+	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		EnemyBulletFlag = false;
 	}
 
 	frame = 0;
 	maxframe = 100;
+	EnemyBulletFrame = 0;
+	EnemyBulletMaxframe = 100;
 	shotTimer = 120;
 	maxshotTimer = 120;
 }
@@ -20,11 +27,16 @@ GameScene::~GameScene()
 {
 	safe_delete(spriteBG);
 	safe_delete(playerModel);
+	safe_delete(EnemyBulletModel);
 	for (int i = 0; i < 20; i++)
 	{
-		safe_delete(playerObj[20]);
+		safe_delete(playerObj[i]);
 	}
 
+	for (int i = 0; i < 20; i++)
+	{
+		safe_delete(EnemyBullet[i]);
+	}
 
 	safe_delete(playerModel2);
 	safe_delete(playerObj2);
@@ -67,6 +79,16 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		playerObj[i]->SetPosition({ -5.0f, 0.0f, -100.0f });
 		playerObj[i]->SetScale({ 0.5f,0.5f,0.5f });
 		playerObj[i]->Update();
+	}
+
+	EnemyBulletModel = EnemyBulletModel->CreateFromObject("bullet");
+	for (int i = 0; i < 20; i++)
+	{
+		EnemyBullet[0] = Object3d::Create();
+		EnemyBullet[0]->LinkModel(EnemyBulletModel);
+		EnemyBullet[0]->SetPosition({ -5.0f, 0.0f, 0.0f });
+		EnemyBullet[0]->SetScale({ 0.5f,0.5f,0.5f });
+		EnemyBullet[0]->Update();
 	}
 
 	playerModel = playerModel2->CreateFromObject("temp");
@@ -123,6 +145,8 @@ void GameScene::Update()
 		position[i] = playerObj[i]->GetPosition();
 	}
 
+	
+
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 	XMVECTOR v0 = { 0, 0, -20, 0 };
 	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
@@ -165,11 +189,38 @@ void GameScene::Update()
 				position[i].z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
 
 			}
-			if (frame > maxframe) {
-				BulletFlag[i] = false;
+		}
+		if (frame > maxframe) {
+			BulletFlag[i] = false;
+		}
+	}
+
+	XMFLOAT3 enemyBulletPosition = EnemyBullet[0]->GetPosition();
+	for (int i = 0; i < 20; i++)
+	{
+		
+	}
+	for (int i = 0; i < 20; i++)
+	{
+		
+		if (EnemyBulletFlag == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+		{
+			EnemyBulletFlag = true;
+			enemyBulletPosition.z = position2.z;
+		}
+
+		if (EnemyBulletFlag == true)
+		{
+			enemyBulletPosition.z += 0.1f;
+			if (enemyBulletPosition.z >= 500.0f)
+			{
+				EnemyBulletFlag = false;
+				EnemyBulletFrame = 0;
+				enemyBulletPosition.z = 0;
 			}
 		}
 	}
+
 
 	// ƒJƒƒ‰ˆÚ“®
 	//if (input->PushKey(DIK_Q) || input->PushKey(DIK_E) || input->PushKey(DIK_LCONTROL) || input->PushKey(DIK_SPACE))
@@ -189,12 +240,18 @@ void GameScene::Update()
 		playerObj[i]->SetPosition(position[i]);
 		playerObj[i]->Update();
 	}
+	for (int i = 0; i < 20; i++)
+	{
+		EnemyBullet[0]->SetPosition(enemyBulletPosition);
+		EnemyBullet[0]->Update();
+	}
 	playerObj2->Update();
 	skydomeObj->Update();
 	char str[256];
-	sprintf_s(str, "%f, %f", frame, shotTimer);
+	sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition.z);
 	debugText.Print(str, 20, 20, 1.5f);
 	frame++;
+	EnemyBulletFrame++;
 }
 
 void GameScene::Draw()
@@ -228,6 +285,13 @@ void GameScene::Draw()
 	{
 		if (BulletFlag[i] == true) {
 			playerObj[i]->Draw();
+		}
+	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		if (EnemyBulletFlag == true) {
+			EnemyBullet[0]->Draw();
 		}
 	}
 
