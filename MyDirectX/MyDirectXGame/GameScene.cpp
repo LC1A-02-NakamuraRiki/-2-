@@ -235,7 +235,7 @@ void GameScene::Update()
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
 		   
-			if (EnemybullTimer==0) {
+			if (EnemybullTimer>=0) {
 
 				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 				{
@@ -250,8 +250,8 @@ void GameScene::Update()
 				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2;
 				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2;
 						
-				if (enemyBulletPosition[i].z >= 30.0f|| enemyBulletPosition[i].z <= -30.0f
-					|| enemyBulletPosition[i].x >= 30.0f || enemyBulletPosition[i].x <= -30.0f)
+				if (enemyBulletPosition[i].z >= 50.0f|| enemyBulletPosition[i].z <= -50.0f
+					|| enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
 				{
 					EnemyBulletFlag[i] = false;
 					EnemyBulletFrame = 0;
