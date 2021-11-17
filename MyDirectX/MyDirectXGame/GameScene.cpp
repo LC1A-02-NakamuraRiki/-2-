@@ -22,8 +22,9 @@ GameScene::GameScene()
 	shotTimer = 120;
 	maxshotTimer = 300;
 
-	//自機が特定の位置に入った時のフラグ
-	enemyMoveFlag = false;
+	enemyMoveFlag = 0;
+	enemyFrame = 0;
+	enemyMaxFrame = 100;
 }
 
 GameScene::~GameScene()
@@ -125,8 +126,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	skydomeObj->Update();
 	//サウンド再生
 	//audio->PlayWave("Resources/Alarm01.wav");
-	/*audio->PlayBGM("Resources/Alarm01.wav", true);
-	audio->PlaySE("Resources/Alarm01.wav", false);*/
+	audio->PlayBGM("Resources/Alarm01.wav", true);
+	audio->PlaySE("Resources/Alarm01.wav", false);
 	audio->StopBGM();
 }
 
@@ -199,8 +200,8 @@ void GameScene::Update()
 		// カメラ移動
 		if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 		{
-			if (input->PushKey(DIK_D)) { angle += 5.0f * slowValue; }
-			else if (input->PushKey(DIK_A)) { angle -= 5.0f * slowValue; }
+			if (input->PushKey(DIK_D)) { angle -= 5.0f * slowValue; }
+			else if (input->PushKey(DIK_A)) { angle += 5.0f * slowValue; }
 
 		}
 
@@ -230,28 +231,42 @@ void GameScene::Update()
 		}
 
 		//敵の弾----------------------------------------------------------------
-		for (int i = 0; i < 20; i++)
+		float AngleX = f.x - position2.x;
+		float AngleZ = f.z - position2.z;
+		float Angle = atan2(AngleX, AngleZ);
+		//レーザー--------------------------------------------------------------
+		if (Angle < 2.5 && Angle < -1.9)
 		{
+			enemyMoveFlag = 1;
+		}
 
-			if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+		if (enemyMoveFlag == 1)
+		{
+			for (int i = 0; i < 20; i++)
 			{
-				EnemyBulletFlag[i] = true;
-				enemyBulletPosition[i].z = position2.z;
-			}
 
-			if (EnemyBulletFlag[i] == true)
-			{
-				enemyBulletPosition[i].z += 0.5f;
-				if (enemyBulletPosition[i].z >= 300.0f)
+				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+				{
+					EnemyBulletFlag[i] = true;
+					enemyBulletPosition[i].z = position2.z;
+					enemyBulletPosition[i].x = position2.x;
+					enemyFrame = 0;
+					EnemyBulletFrame = 0;
+				}
+
+				if (EnemyBulletFlag[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
+				{
+					enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
+					enemyBulletPosition[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
+					enemyBulletPosition[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
+				}
+				if (enemyFrame >= enemyMaxFrame)
 				{
 					EnemyBulletFlag[i] = false;
-					EnemyBulletFrame = 0;
-					enemyBulletPosition[i].z = 0;
+					enemyMoveFlag = 0;
 				}
 			}
 		}
-
-
 
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
@@ -275,9 +290,10 @@ void GameScene::Update()
 		EnemyBulletFrame++;
 		shotTimer++;
 		frame++;
+		enemyFrame++;
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition[0].z);
+		sprintf_s(str, "%f  position %f %f, flag = %d %f", enemyFrame, f.z, f.x, enemyMoveFlag, Angle);
 		debugText.Print(str, 20, 20, 1.5f);
 
 		float r = 1;
@@ -364,7 +380,7 @@ void GameScene::Draw()
 
 	for (int i = 0; i < 20; i++)
 	{
-		if (EnemyBulletFlag[i] == true) {
+		if (EnemyBulletFlag[i] == true && enemyMoveFlag == 1) {
 			EnemyBullet[i]->Draw();
 		}
 	}

@@ -100,7 +100,10 @@ public:
 	bool EnemyBulletFlag[20];
 	float EnemyBulletFrame;
 	float EnemyBulletMaxframe;
-	bool enemyMoveFlag;
+	int enemyMoveFlag;
+	float enemyFrame;
+	float enemyMaxFrame;
+	float enemyX;
 
 	bool hit[20];
 };
