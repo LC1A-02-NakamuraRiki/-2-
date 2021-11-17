@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include <cassert>
+#include <time.h>
 
 using namespace DirectX;
 
@@ -10,9 +11,10 @@ GameScene::GameScene()
 		BulletFlag[i] = false;
 	}
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBulletFlag[i] = false;
+		/*bullAngle[i] = 3.14 / 2;*/
 	}
 
 	frame = 0;
@@ -20,7 +22,9 @@ GameScene::GameScene()
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
 	shotTimer = 120;
+	EnemybullTimer = 120;
 	maxshotTimer = 300;
+	srand(time(NULL));
 }
 
 GameScene::~GameScene()
@@ -35,7 +39,7 @@ GameScene::~GameScene()
 		safe_delete(playerObj[i]);
 	}
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		safe_delete(EnemyBullet[i]);
 	}
@@ -99,7 +103,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	}
 
 	EnemyBulletModel = EnemyBulletModel->CreateFromObject("bullet");
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBullet[i] = Object3d::Create();
 		EnemyBullet[i]->LinkModel(EnemyBulletModel);
@@ -142,8 +146,8 @@ void GameScene::Update()
 		position[i] = playerObj[i]->GetPosition();
 	}
 	//敵の弾取得-------------------------------------
-	XMFLOAT3 enemyBulletPosition[20];
-	for (int i = 0; i < 20; i++)
+	XMFLOAT3 enemyBulletPosition[EnemyBulletNum];
+	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
 	}
@@ -227,27 +231,38 @@ void GameScene::Update()
 		}
 
 		//敵の弾----------------------------------------------------------------
-		for (int i = 0; i < 20; i++)
+
+		for (int i = 0; i < EnemyBulletNum; i++)
 		{
+		   
+			if (EnemybullTimer==0) {
 
-			if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
-			{
-				EnemyBulletFlag[i] = true;
-				enemyBulletPosition[i].z = position2.z;
+				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+				{
+					EnemyBulletFlag[i] = true;
+					enemyBulletPosition[i].z = position2.z;
+					enemyBulletPosition[i].x = position2.x;
+					bullAngle[i] = rand()+1000 / 10000.f * (PI * 2);
+				}
 			}
-
 			if (EnemyBulletFlag[i] == true)
 			{
-				enemyBulletPosition[i].z += 0.5f;
-				if (enemyBulletPosition[i].z >= 300.0f)
+				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2;
+				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2;
+						
+				if (enemyBulletPosition[i].z >= 30.0f|| enemyBulletPosition[i].z <= -30.0f
+					|| enemyBulletPosition[i].x >= 30.0f || enemyBulletPosition[i].x <= -30.0f)
 				{
 					EnemyBulletFlag[i] = false;
 					EnemyBulletFrame = 0;
+					EnemybullTimer = 120;
 					enemyBulletPosition[i].z = 0;
+					enemyBulletPosition[i].x = 0;
+			
 				}
 			}
 		}
-
+		
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
@@ -259,7 +274,7 @@ void GameScene::Update()
 			playerObj[i]->SetPosition(position[i]);
 			playerObj[i]->Update();
 		}
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < EnemyBulletNum; i++)
 		{
 			EnemyBullet[i]->SetPosition(enemyBulletPosition[i]);
 			EnemyBullet[i]->Update();
@@ -269,10 +284,11 @@ void GameScene::Update()
 		//タイマー-------------------------
 		EnemyBulletFrame++;
 		shotTimer++;
+		EnemybullTimer--;
 		frame++;
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition[0].z);
+		sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemybullTimer, enemyBulletPosition[0].z);
 		debugText.Print(str, 20, 20, 1.5f);
 
 		float r = 1;
@@ -357,7 +373,7 @@ void GameScene::Draw()
 		}
 	}
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		if (EnemyBulletFlag[i] == true) {
 			EnemyBullet[i]->Draw();
