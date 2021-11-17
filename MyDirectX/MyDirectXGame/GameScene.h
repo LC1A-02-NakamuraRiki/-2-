@@ -9,6 +9,7 @@
 #include "DebugText.h"
 #include "Audio.h"
 #include "Model.h"
+#include "Collision.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,7 +65,10 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	Sprite *spriteBG = nullptr;
-	
+	Sprite *title = nullptr;
+	Sprite *clear = nullptr;
+	Sprite *gameover = nullptr;
+
 	Object3d* playerObj[20] = { nullptr };
 	Model *playerModel = nullptr;
 
@@ -77,6 +81,7 @@ private: // メンバ変数
 	Object3d *skydomeObj = nullptr;
 	Model *skydomeModel = nullptr;
 public:
+	int sceneNo = 0;
 	bool BulletFlag[20];
 	float shotTimer;
 	float maxshotTimer;
@@ -92,5 +97,7 @@ public:
 	bool EnemyBulletFlag[20];
 	float EnemyBulletFrame;
 	float EnemyBulletMaxframe;
+
+	bool hit[20];
 };
 
