@@ -12,11 +12,11 @@ GameScene::GameScene()
 
 	for (int i = 0; i < 20; i++)
 	{
-		EnemyBulletFlag = false;
+		EnemyBulletFlag[i] = false;
 	}
 
 	frame = 0;
-	maxframe = 100;
+	maxframe = 200;
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
 	shotTimer = 120;
@@ -84,11 +84,11 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	EnemyBulletModel = EnemyBulletModel->CreateFromObject("bullet");
 	for (int i = 0; i < 20; i++)
 	{
-		EnemyBullet[0] = Object3d::Create();
-		EnemyBullet[0]->LinkModel(EnemyBulletModel);
-		EnemyBullet[0]->SetPosition({ -5.0f, 0.0f, 0.0f });
-		EnemyBullet[0]->SetScale({ 0.5f,0.5f,0.5f });
-		EnemyBullet[0]->Update();
+		EnemyBullet[i] = Object3d::Create();
+		EnemyBullet[i]->LinkModel(EnemyBulletModel);
+		EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
+		EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
+		EnemyBullet[i]->Update();
 	}
 
 	playerModel = playerModel2->CreateFromObject("temp");
@@ -148,7 +148,7 @@ void GameScene::Update()
 	
 
 	XMFLOAT3 position2 = playerObj2->GetPosition();
-	XMVECTOR v0 = { 0, 0, -20, 0 };
+	XMVECTOR v0 = { 0, 0, -50, 0 };
 	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
 	XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
 	XMVECTOR v = XMVector3TransformNormal(v0, rotM);
@@ -172,7 +172,7 @@ void GameScene::Update()
 	{
 
 		if (input->PushKey(DIK_SPACE)) {
-			if (BulletFlag[i] == false) {
+			if (BulletFlag[i] == false && shotTimer <= maxshotTimer) {
 				BulletFlag[i] = true;
 				frame = 0;
 				position[i].x = f.x;
@@ -183,7 +183,8 @@ void GameScene::Update()
 
 		if (BulletFlag[i] == true) {
 			shotTimer++;
-			if (frame >= 0 && frame <= maxframe && shotTimer >= maxshotTimer) {
+			if (frame >= 0 && frame <= maxframe) {
+				frame++;
 				x = static_cast<float>(frame) / static_cast<float>(maxframe);
 				position[i].x = f.x + ((position2.x - 5.48) - f.x) * (sin(x * PI / 2));
 				position[i].z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
@@ -195,28 +196,30 @@ void GameScene::Update()
 		}
 	}
 
-	XMFLOAT3 enemyBulletPosition = EnemyBullet[0]->GetPosition();
+	XMFLOAT3 enemyBulletPosition[20];
 	for (int i = 0; i < 20; i++)
 	{
-		
+		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
 	}
+	
+	
 	for (int i = 0; i < 20; i++)
 	{
 		
-		if (EnemyBulletFlag == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+		if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 		{
-			EnemyBulletFlag = true;
-			enemyBulletPosition.z = position2.z;
+			EnemyBulletFlag[i] = true;
+			enemyBulletPosition[i].z = position2.z;
 		}
 
-		if (EnemyBulletFlag == true)
+		if (EnemyBulletFlag[i] == true)
 		{
-			enemyBulletPosition.z += 0.1f;
-			if (enemyBulletPosition.z >= 500.0f)
+			enemyBulletPosition[i].z += 0.5f;
+			if (enemyBulletPosition[i].z >= 300.0f)
 			{
-				EnemyBulletFlag = false;
+				EnemyBulletFlag[i] = false;
 				EnemyBulletFrame = 0;
-				enemyBulletPosition.z = 0;
+				enemyBulletPosition[i].z = 0;
 			}
 		}
 	}
@@ -242,15 +245,14 @@ void GameScene::Update()
 	}
 	for (int i = 0; i < 20; i++)
 	{
-		EnemyBullet[0]->SetPosition(enemyBulletPosition);
-		EnemyBullet[0]->Update();
+		EnemyBullet[i]->SetPosition(enemyBulletPosition[i]);
+		EnemyBullet[i]->Update();
 	}
 	playerObj2->Update();
 	skydomeObj->Update();
 	char str[256];
-	sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition.z);
+	sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition[0].z);
 	debugText.Print(str, 20, 20, 1.5f);
-	frame++;
 	EnemyBulletFrame++;
 }
 
@@ -290,8 +292,8 @@ void GameScene::Draw()
 
 	for (int i = 0; i < 20; i++)
 	{
-		if (EnemyBulletFlag == true) {
-			EnemyBullet[0]->Draw();
+		if (EnemyBulletFlag[i] == true) {
+			EnemyBullet[i]->Draw();
 		}
 	}
 

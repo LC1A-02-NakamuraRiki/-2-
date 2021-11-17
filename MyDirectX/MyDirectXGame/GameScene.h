@@ -89,7 +89,7 @@ public:
 	float slowValue = 1.0f;
 	bool isSlow = 0;
 
-	bool EnemyBulletFlag;
+	bool EnemyBulletFlag[20];
 	float EnemyBulletFrame;
 	float EnemyBulletMaxframe;
 };
