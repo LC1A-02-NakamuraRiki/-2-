@@ -16,7 +16,7 @@ GameScene::GameScene()
 	}
 
 	frame = 0;
-	maxframe = 100;
+	maxframe = 50;
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
 	shotTimer = 120;
@@ -109,10 +109,27 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 
 void GameScene::Update()
 {
+	//カメラの位置取得--------------------------------
+	XMFLOAT3 cameraTarget = Object3d::GetTarget();
+	XMFLOAT3 cameraEye = Object3d::GetEye();
+	//マウスカーソル位置取得---------------------------
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	//弾の位置取得-----------------------------------
+	XMFLOAT3 position[20];
+	for (int i = 0; i < 20; i++)
+	{
+		position[i] = playerObj[i]->GetPosition();
+	}
+	//敵の弾取得-------------------------------------
+	XMFLOAT3 enemyBulletPosition[20];
+	for (int i = 0; i < 20; i++)
+	{
+		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
+	}
+
+	//スロー処理--------------------------------
 	maxshotTimer++;
-	//debugText.Print("ObjectMove:ArrowKey", 20, 20, 1.5f);
-	//debugText.Print("EyeMove:W A S D", 20, 50, 1.5f);
-	//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 80, 1.5f);
 
 	if (input->PushKey(DIK_1) || input->PushKey(DIK_2))
 	{
@@ -133,18 +150,7 @@ void GameScene::Update()
 		slowValue += 0.03125;
 	}
 
-	XMFLOAT3 cameraTarget = Object3d::GetTarget();
-	XMFLOAT3 cameraEye = Object3d::GetEye();
-
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-
-	XMFLOAT3 position[20];
-	for (int i = 0; i < 20; i++)
-	{
-		position[i] = playerObj[i]->GetPosition();
-	}
-
+	//ボスをターゲットにしたカメラ回転--------------------------------------
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 	XMVECTOR v0 = { 0, 0, -50, 0 };
 	//angleラジアンだけy軸まわりに回転。半径は-100
@@ -166,9 +172,9 @@ void GameScene::Update()
 
 	}
 
+	//弾の移動-----------------------------------------------------------------
 	for (int i = 0; i < 20; i++)
 	{
-
 		if (input->PushKey(DIK_SPACE)) {
 			if (BulletFlag[i] == false && shotTimer <= maxshotTimer) {
 				BulletFlag[i] = true;
@@ -191,13 +197,7 @@ void GameScene::Update()
 		}
 	}
 
-	XMFLOAT3 enemyBulletPosition[20];
-	for (int i = 0; i < 20; i++)
-	{
-		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
-	}
-
-
+	//敵の弾----------------------------------------------------------------
 	for (int i = 0; i < 20; i++)
 	{
 
@@ -219,20 +219,12 @@ void GameScene::Update()
 		}
 	}
 
-
-	// カメラ移動
-	//if (input->PushKey(DIK_Q) || input->PushKey(DIK_E) || input->PushKey(DIK_LCONTROL) || input->PushKey(DIK_SPACE))
-	//{
-	//	if (input->PushKey(DIK_SPACE)) { Object3d::CameraMoveEyeVector({ 0.0f,+1.0f,0.0f }); }
-	//	else if (input->PushKey(DIK_LCONTROL)) { Object3d::CameraMoveEyeVector({ 0.0f,-1.0f,0.0f }); }
-	//	if (input->PushKey(DIK_E)) { Object3d::CameraMoveEyeVector({ +1.0f,0.0f,0.0f }); }
-	//	else if (input->PushKey(DIK_Q)) { Object3d::CameraMoveEyeVector({ -1.0f,0.0f,0.0f }); }
-	//}
-
+	//カメラY軸に対する首振り---------------------------
 	float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
 	cameraTarget.y = XMConvertToRadians(mouseAngle);
 	Object3d::SetTarget(cameraTarget);
 
+	//ポジションをセット-----------------
 	for (int i = 0; i < 20; i++)
 	{
 		playerObj[i]->SetPosition(position[i]);
@@ -245,12 +237,14 @@ void GameScene::Update()
 	}
 	playerObj2->Update();
 	skydomeObj->Update();
-	char str[256];
-	sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition[0].z);
-	debugText.Print(str, 20, 20, 1.5f);
+	//タイマー-------------------------
 	EnemyBulletFrame++;
 	shotTimer++;
 	frame++;
+	//デバッグテキスト-------------------
+	char str[256];
+	sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition[0].z);
+	debugText.Print(str, 20, 20, 1.5f);
 }
 
 void GameScene::Draw()
