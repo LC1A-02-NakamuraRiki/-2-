@@ -19,8 +19,8 @@ GameScene::GameScene()
 	maxframe = 200;
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
-	shotTimer = 120;
-	maxshotTimer = 120;
+	shotTimer = 200;
+	maxshotTimer = 200;
 }
 
 GameScene::~GameScene()
@@ -176,7 +176,7 @@ void GameScene::Update()
 				BulletFlag[i] = true;
 				frame = 0;
 				position[i].x = f.x;
-				position[i].z = f.z;
+				position[i].z = f.z + 80;
 				shotTimer = 0;
 			}
 		}
