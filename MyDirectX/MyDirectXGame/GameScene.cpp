@@ -16,11 +16,11 @@ GameScene::GameScene()
 	}
 
 	frame = 0;
-	maxframe = 200;
+	maxframe = 100;
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
-	shotTimer = 200;
-	maxshotTimer = 200;
+	shotTimer = 120;
+	maxshotTimer = 300;
 }
 
 GameScene::~GameScene()
@@ -145,8 +145,6 @@ void GameScene::Update()
 		position[i] = playerObj[i]->GetPosition();
 	}
 
-	
-
 	XMFLOAT3 position2 = playerObj2->GetPosition();
 	XMVECTOR v0 = { 0, 0, -50, 0 };
 	//angleƒ‰ƒWƒAƒ“‚¾‚¯yŽ²‚Ü‚í‚è‚É‰ñ“]B”¼Œa‚Í-100
@@ -176,19 +174,16 @@ void GameScene::Update()
 				BulletFlag[i] = true;
 				frame = 0;
 				position[i].x = f.x;
-				position[i].z = f.z + 80;
+				position[i].z = f.z + 200;
 				shotTimer = 0;
 			}
 		}
 
 		if (BulletFlag[i] == true) {
-			shotTimer++;
 			if (frame >= 0 && frame <= maxframe) {
-				frame++;
 				x = static_cast<float>(frame) / static_cast<float>(maxframe);
 				position[i].x = f.x + ((position2.x - 5.48) - f.x) * (sin(x * PI / 2));
 				position[i].z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
-
 			}
 		}
 		if (frame > maxframe) {
@@ -201,11 +196,11 @@ void GameScene::Update()
 	{
 		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
 	}
-	
-	
+
+
 	for (int i = 0; i < 20; i++)
 	{
-		
+
 		if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 		{
 			EnemyBulletFlag[i] = true;
@@ -254,6 +249,8 @@ void GameScene::Update()
 	sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemyBulletFrame, enemyBulletPosition[0].z);
 	debugText.Print(str, 20, 20, 1.5f);
 	EnemyBulletFrame++;
+	shotTimer++;
+	frame++;
 }
 
 void GameScene::Draw()
