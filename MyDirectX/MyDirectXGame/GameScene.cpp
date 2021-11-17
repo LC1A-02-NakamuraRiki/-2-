@@ -21,6 +21,9 @@ GameScene::GameScene()
 	EnemyBulletMaxframe = 100;
 	shotTimer = 120;
 	maxshotTimer = 300;
+
+	//自機が特定の位置に入った時のフラグ
+	enemyMoveFlag = false;
 }
 
 GameScene::~GameScene()
@@ -122,8 +125,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	skydomeObj->Update();
 	//サウンド再生
 	//audio->PlayWave("Resources/Alarm01.wav");
-	audio->PlayBGM("Resources/Alarm01.wav", true);
-	audio->PlaySE("Resources/Alarm01.wav", false);
+	/*audio->PlayBGM("Resources/Alarm01.wav", true);
+	audio->PlaySE("Resources/Alarm01.wav", false);*/
 	audio->StopBGM();
 }
 
@@ -247,6 +250,8 @@ void GameScene::Update()
 				}
 			}
 		}
+
+
 
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
