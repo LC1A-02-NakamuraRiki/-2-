@@ -287,11 +287,19 @@ void GameScene::Update()
 
 			if (EnemyBulletFlag[i] == true)
 			{
+<<<<<<< HEAD
 				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2;
 				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2;
 
 				if (enemyBulletPosition[i].z >= 50.0f || enemyBulletPosition[i].z <= -50.0f ||
 					enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
+=======
+				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
+				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
+						
+				if (enemyBulletPosition[i].z >= 50.0f|| enemyBulletPosition[i].z <= -50.0f
+					|| enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
+>>>>>>> origin/EnemyBullet
 				{
 					EnemyBulletFlag[i] = false;
 					EnemyBulletFrame = 0;
