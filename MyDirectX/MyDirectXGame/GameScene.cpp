@@ -277,15 +277,9 @@ void GameScene::Update()
 				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 				{
 					EnemyBulletFlag[i] = true;
-<<<<<<< HEAD
 					enemyBulletPosition[i].z = position2.z-9;
 					enemyBulletPosition[i].x = position2.x-5;
 					bullAngle[i] = rand()+1000 / 10000.f * (PI * 2);
-=======
-					enemyBulletPosition[i].z = position2.z;
-					enemyBulletPosition[i].x = position2.x;
-					bullAngle[i] = rand() + 1000 / 10000.0f * (PI * 2);
->>>>>>> origin/作業用
 				}
 			}
 
