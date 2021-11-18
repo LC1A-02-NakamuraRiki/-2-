@@ -119,5 +119,12 @@ public:
 	int bossHP = 3;
 
 	int active;
+
+	//シェイク
+	bool shakeFlag;
+	float shakeX;
+	float shakeY;
+	float shakeZ;
+	float shakeCount;
 };
 

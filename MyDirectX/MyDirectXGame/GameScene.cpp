@@ -35,6 +35,12 @@ GameScene::GameScene()
 	bossHP = 3;
 
 	active = 0;
+
+	shakeCount = 0;
+	shakeX = 0.0f;
+	shakeY = 0.0f;
+	shakeZ = 0.0f;
+	shakeFlag = true;
 }
 
 GameScene::~GameScene()
@@ -180,6 +186,8 @@ void GameScene::Update()
 		}
 	} else if (sceneNo == 1)
 	{
+		
+
 		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
 		{
 			isSlow = 1;
@@ -240,7 +248,14 @@ void GameScene::Update()
 			if (frame > maxframe) {
 				BulletFlag[i] = false;
 			}
-		}
+		}/*
+
+		if (shakeFlag == true)
+		{
+			position2.x -= shakeX;
+			position2.y -= shake;
+			position2.x -= shakeX;
+		}*/
 
 		/*---------------------敵の弾----------------------*/
 		float AngleX = position2.x - f.x;
@@ -328,6 +343,36 @@ void GameScene::Update()
 		default:
 			break;
 		}
+
+		//揺れ-------------------------------------------
+		if (shakeCount > 20)
+		{
+			shakeCount = 0;
+			shakeFlag = false;
+		}
+		if (shakeFlag == false)
+		{
+			shakeX = 0.0f;
+			shakeY = 0.0f;
+			shakeZ = 0.0f;
+		} else
+		{
+			shakeX = rand() % 1000 - 500;
+			shakeY = rand() % 1000 - 500;
+			shakeZ = rand() % 1000 - 500;
+
+			position2.x += shakeX;
+			position2.y += shakeY;
+			position2.z += shakeZ;
+			shakeCount++;
+		}
+
+		/*if (shakeFlag == true)
+		{
+			position2.x -= shakeX;
+			position2.y -= shakeY;
+			position2.z -= shakeZ;
+		}*/
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
@@ -355,9 +400,10 @@ void GameScene::Update()
 		frame++;
 		enemyFrame++;
 		EnemybullTimer--;
+		
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, f.z, f.x, enemyMoveFlag, Angle, bossHP);
+		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, position2.z, position2.x, enemyMoveFlag, shakeCount, bossHP);
 		debugText.Print(str, 20, 20, 1.5f);
 
 		float r = 1;
