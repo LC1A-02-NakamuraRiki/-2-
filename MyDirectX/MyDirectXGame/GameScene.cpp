@@ -1,6 +1,6 @@
 #include "GameScene.h"
 #include <cassert>
-#include <time.h>
+#include<time.h>
 
 using namespace DirectX;
 
@@ -14,7 +14,6 @@ GameScene::GameScene()
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBulletFlag[i] = false;
-		/*bullAngle[i] = 3.14 / 2;*/
 	}
 
 	frame = 0;
@@ -22,9 +21,13 @@ GameScene::GameScene()
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
 	shotTimer = 120;
-	EnemybullTimer = 120;
 	maxshotTimer = 300;
+	EnemybullTimer = 120;
 	srand(time(NULL));
+
+	enemyMoveFlag = 0;
+	enemyFrame = 0;
+	enemyMaxFrame = 100;
 }
 
 GameScene::~GameScene()
@@ -160,24 +163,21 @@ void GameScene::Update()
 		{
 			sceneNo = 1;
 		}
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 		maxshotTimer++;
 
 		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
 		{
 			isSlow = 1;
-		}
-		else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
+		} else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
 		{
 			isSlow = 0;
 		}
 		if (isSlow == 1 && slowValue > 0.0625)
 		{
 			slowValue -= 0.03125;
-		}
-		else if (isSlow == 0 && slowValue < 1.0)
+		} else if (isSlow == 0 && slowValue < 1.0)
 		{
 			slowValue += 0.03125;
 		}
@@ -200,13 +200,12 @@ void GameScene::Update()
 		// カメラ移動
 		if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 		{
-			if (input->PushKey(DIK_D)) { angle += 5.0f * slowValue; }
-			else if (input->PushKey(DIK_A)) { angle -= 5.0f * slowValue; }
+			if (input->PushKey(DIK_D)) { angle -= 5.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle += 5.0f * slowValue; }
 
 		}
 
 		//弾の移動-----------------------------------------------------------------
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < EnemyBulletNum; i++)
 		{
 			if (input->TriggerMouse(0)) {
 				if (BulletFlag[i] == false && shotTimer <= maxshotTimer) {
@@ -230,27 +229,72 @@ void GameScene::Update()
 			}
 		}
 
-		//敵の弾----------------------------------------------------------------
-
-		for (int i = 0; i < EnemyBulletNum; i++)
+		/*---------------------敵の弾----------------------*/
+		//レーザー--------------------------------------------------------------
+		float AngleX = position2.x - f.x;
+		float AngleZ = position2.z - f.z;
+		float Angle = atan2(AngleX, AngleZ);
+		if (Angle <= 1.0 && Angle >= -1.0)
 		{
-		   
-			if (EnemybullTimer>=0) {
+			enemyMoveFlag = 1;
+		}
+		for (int i = 0; i < 20; i++)
+		{
+			if (enemyMoveFlag == 1)
+			{
+
 
 				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 				{
 					EnemyBulletFlag[i] = true;
+					enemyBulletPosition[i].z = position2.z;
+					enemyBulletPosition[i].x = position2.x;
+					enemyFrame = 0;
+					EnemyBulletFrame = 0;
+				}
+
+				if (EnemyBulletFlag[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
+				{
+					enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
+					enemyBulletPosition[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
+					enemyBulletPosition[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
+				}
+				if (enemyFrame >= enemyMaxFrame)
+				{
+					EnemyBulletFlag[i] = false;
+					enemyMoveFlag = 0;
+				}
+
+			} else {
+				EnemyBulletFlag[i] = false;
+			}
+		}
+		//弾幕--------------------------------------------
+		for (int i = 0; i < EnemyBulletNum; i++)
+		{
+			if (EnemybullTimer >= 0)
+			{
+				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+				{
+					EnemyBulletFlag[i] = true;
+<<<<<<< HEAD
 					enemyBulletPosition[i].z = position2.z-9;
 					enemyBulletPosition[i].x = position2.x-5;
 					bullAngle[i] = rand()+1000 / 10000.f * (PI * 2);
+=======
+					enemyBulletPosition[i].z = position2.z;
+					enemyBulletPosition[i].x = position2.x;
+					bullAngle[i] = rand() + 1000 / 10000.0f * (PI * 2);
+>>>>>>> origin/菴懈･ｭ逕ｨ
 				}
 			}
+
 			if (EnemyBulletFlag[i] == true)
 			{
 				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
 				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
-						
-				if (enemyBulletPosition[i].z >= 50.0f|| enemyBulletPosition[i].z <= -50.0f
+
+				if (enemyBulletPosition[i].z >= 50.0f || enemyBulletPosition[i].z <= -50.0f
 					|| enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
 				{
 					EnemyBulletFlag[i] = false;
@@ -258,11 +302,10 @@ void GameScene::Update()
 					EnemybullTimer = 120;
 					enemyBulletPosition[i].z = 0;
 					enemyBulletPosition[i].x = 0;
-			
 				}
 			}
 		}
-		
+
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
@@ -284,11 +327,12 @@ void GameScene::Update()
 		//タイマー-------------------------
 		EnemyBulletFrame++;
 		shotTimer++;
-		EnemybullTimer--;
 		frame++;
+		enemyFrame++;
+		EnemybullTimer--;
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f, %f, %f  position %f", frame, shotTimer, EnemybullTimer, enemyBulletPosition[0].z);
+		sprintf_s(str, "%f  position %f %f, flag = %d %f", enemyFrame, f.z, f.x, enemyMoveFlag, Angle);
 		debugText.Print(str, 20, 20, 1.5f);
 
 		float r = 1;
@@ -301,27 +345,24 @@ void GameScene::Update()
 				//sceneNo = 2;
 			}
 		}
-	}
-	else if (sceneNo == 2)
+	} else if (sceneNo == 2)
 	{
-	debugText.Print("Clear", 20, 20, 1.5f);
-	if (input->TriggerKey(DIK_SPACE))
+		debugText.Print("Clear", 20, 20, 1.5f);
+		if (input->TriggerKey(DIK_SPACE))
+		{
+			sceneNo = 4;
+		}
+	} else if (sceneNo == 3)//初期化用
 	{
-		sceneNo = 4;
-	}
-	}
-	else if (sceneNo == 3)//初期化用
+		debugText.Print("gameover", 20, 20, 1.5f);
+		if (input->TriggerKey(DIK_SPACE))
+		{
+			sceneNo = 4;
+		}
+	} else if (sceneNo == 4)//初期化用
 	{
-	debugText.Print("gameover", 20, 20, 1.5f);
-	if (input->TriggerKey(DIK_SPACE))
-	{
-		sceneNo = 4;
-	}
-}
-	else if (sceneNo == 4)//初期化用
-	{
-	debugText.Print("gameover", 20, 20, 1.5f);
-	sceneNo = 0;
+		debugText.Print("gameover", 20, 20, 1.5f);
+		sceneNo = 0;
 	}
 }
 
@@ -337,16 +378,13 @@ void GameScene::Draw()
 	if (sceneNo == 0)
 	{
 		spriteBG->Draw();
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 
-	}
-	else if (sceneNo == 2)
+	} else if (sceneNo == 2)
 	{
 		spriteBG->Draw();
-	}
-	else if (sceneNo == 3)
+	} else if (sceneNo == 3)
 	{
 		spriteBG->Draw();
 	}
@@ -373,9 +411,9 @@ void GameScene::Draw()
 		}
 	}
 
-	for (int i = 0; i < EnemyBulletNum; i++)
+	for (int i = 0; i < 20; i++)
 	{
-		if (EnemyBulletFlag[i] == true) {
+		if (EnemyBulletFlag[i] == true /*&& enemyMoveFlag == 1*/) {
 			EnemyBullet[i]->Draw();
 		}
 	}
@@ -395,16 +433,13 @@ void GameScene::Draw()
 	if (sceneNo == 0)
 	{
 		title->Draw();
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 
-	}
-	else if (sceneNo == 2)
+	} else if (sceneNo == 2)
 	{
 		clear->Draw();
-	}
-	else if (sceneNo == 3)
+	} else if (sceneNo == 3)
 	{
 		gameover->Draw();
 	}
