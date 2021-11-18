@@ -71,8 +71,8 @@ private: // メンバ変数
 
 	Object3d* playerObj[20] = { nullptr };
 	Model *playerModel = nullptr;
-
-	Object3d* EnemyBullet[20] = { nullptr };
+	static const int EnemyBulletNum = 100;
+	Object3d* EnemyBullet[EnemyBulletNum] = { nullptr };
 	Model* EnemyBulletModel = nullptr;
 
 	Object3d *playerObj2 = nullptr;
@@ -96,6 +96,7 @@ public:
 	//スロー変数
 	float slowValue = 1.0f;
 	bool isSlow = 0;
+<<<<<<< HEAD
 	//エネミー弾変数
 	bool EnemyBulletFlag[20];
 	float EnemyBulletFrame;
@@ -105,6 +106,15 @@ public:
 	float enemyMaxFrame;
 	float enemyX;
 
+=======
+
+	bool EnemyBulletFlag[EnemyBulletNum];
+	float EnemyBulletFrame;
+	float EnemyBulletMaxframe;
+	
+	float bullAngle[EnemyBulletNum];
+	float EnemybullTimer;
+>>>>>>> origin/EnemyBullet
 	bool hit[20];
 };
 
