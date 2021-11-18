@@ -68,16 +68,17 @@ private: // メンバ変数
 	Sprite *title = nullptr;
 	Sprite *clear = nullptr;
 	Sprite *gameover = nullptr;
-
+	//弾-------------------------------
 	Object3d* playerObj[20] = { nullptr };
 	Model *playerModel = nullptr;
+	//敵の弾-------------------------------
 	static const int EnemyBulletNum = 100;
 	Object3d* EnemyBullet[EnemyBulletNum] = { nullptr };
 	Model* EnemyBulletModel = nullptr;
-
+	//ボス-------------------------------
 	Object3d *playerObj2 = nullptr;
 	Model *playerModel2 = nullptr;
-
+	//背景-------------------------------
 	Object3d *skydomeObj = nullptr;
 	Model *skydomeModel = nullptr;
 public:
@@ -96,9 +97,8 @@ public:
 	//スロー変数
 	float slowValue = 1.0f;
 	bool isSlow = 0;
-<<<<<<< HEAD
 	//エネミー弾変数
-	bool EnemyBulletFlag[20];
+	bool EnemyBulletFlag[EnemyBulletNum];
 	float EnemyBulletFrame;
 	float EnemyBulletMaxframe;
 	int enemyMoveFlag;
@@ -106,15 +106,8 @@ public:
 	float enemyMaxFrame;
 	float enemyX;
 
-=======
-
-	bool EnemyBulletFlag[EnemyBulletNum];
-	float EnemyBulletFrame;
-	float EnemyBulletMaxframe;
-	
 	float bullAngle[EnemyBulletNum];
 	float EnemybullTimer;
->>>>>>> origin/EnemyBullet
 	bool hit[20];
 };
 
