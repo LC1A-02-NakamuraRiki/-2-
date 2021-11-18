@@ -14,12 +14,15 @@ GameScene::GameScene()
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBulletFlag[i] = false;
+		EnemyBulletFlag2[i] = false;
 	}
 
 	frame = 0;
 	maxframe = 50;
 	EnemyBulletFrame = 0;
 	EnemyBulletMaxframe = 100;
+	EnemyBulletFrame2 = 0;
+	EnemyBulletMaxframe2 = 100;
 	shotTimer = 120;
 	maxshotTimer = 300;
 	EnemybullTimer = 120;
@@ -45,6 +48,7 @@ GameScene::~GameScene()
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		safe_delete(EnemyBullet[i]);
+		safe_delete(EnemyBullet2[i]);
 	}
 
 	safe_delete(playerModel2);
@@ -113,6 +117,11 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
 		EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
 		EnemyBullet[i]->Update();
+		EnemyBullet2[i] = Object3d::Create();
+		EnemyBullet2[i]->LinkModel(EnemyBulletModel);
+		EnemyBullet2[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
+		EnemyBullet2[i]->SetScale({ 0.5f,0.5f,0.5f });
+		EnemyBullet2[i]->Update();
 	}
 
 	playerModel = playerModel2->CreateFromObject("temp");
@@ -150,9 +159,11 @@ void GameScene::Update()
 	}
 	//敵の弾取得-------------------------------------
 	XMFLOAT3 enemyBulletPosition[EnemyBulletNum];
+	XMFLOAT3 enemyBulletPosition2[EnemyBulletNum];
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
+		enemyBulletPosition2[i] = EnemyBullet2[i]->GetPosition();
 	}
 
 	//スロー処理--------------------------------
@@ -244,29 +255,29 @@ void GameScene::Update()
 			{
 
 
-				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+				if (EnemyBulletFlag2[i] == false && EnemyBulletFrame2 >= EnemyBulletMaxframe2)
 				{
-					EnemyBulletFlag[i] = true;
-					enemyBulletPosition[i].z = position2.z;
-					enemyBulletPosition[i].x = position2.x;
+					EnemyBulletFlag2[i] = true;
+					enemyBulletPosition2[i].z = position2.z;
+					enemyBulletPosition2[i].x = position2.x;
 					enemyFrame = 0;
-					EnemyBulletFrame = 0;
+					EnemyBulletFrame2 = 0;
 				}
 
-				if (EnemyBulletFlag[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
+				if (EnemyBulletFlag2[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
 				{
 					enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
-					enemyBulletPosition[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
-					enemyBulletPosition[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
+					enemyBulletPosition2[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
+					enemyBulletPosition2[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
 				}
 				if (enemyFrame >= enemyMaxFrame)
 				{
-					EnemyBulletFlag[i] = false;
+					EnemyBulletFlag2[i] = false;
 					enemyMoveFlag = 0;
 				}
 
 			} else {
-				EnemyBulletFlag[i] = false;
+				EnemyBulletFlag2[i] = false;
 			}
 		}
 		//弾幕--------------------------------------------
@@ -280,6 +291,7 @@ void GameScene::Update()
 					enemyBulletPosition[i].z = position2.z-9;
 					enemyBulletPosition[i].x = position2.x-5;
 					bullAngle[i] = rand()+1000 / 10000.f * (PI * 2);
+
 				}
 			}
 
@@ -315,11 +327,14 @@ void GameScene::Update()
 		{
 			EnemyBullet[i]->SetPosition(enemyBulletPosition[i]);
 			EnemyBullet[i]->Update();
+			EnemyBullet2[i]->SetPosition(enemyBulletPosition2[i]);
+			EnemyBullet2[i]->Update();
 		}
 		playerObj2->Update();
 		skydomeObj->Update();
 		//タイマー-------------------------
 		EnemyBulletFrame++;
+		EnemyBulletFrame2++;
 		shotTimer++;
 		frame++;
 		enemyFrame++;
@@ -405,10 +420,13 @@ void GameScene::Draw()
 		}
 	}
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		if (EnemyBulletFlag[i] == true /*&& enemyMoveFlag == 1*/) {
 			EnemyBullet[i]->Draw();
+		}
+		if (EnemyBulletFlag2[i] == true /*&& enemyMoveFlag == 1*/) {
+			EnemyBullet2[i]->Draw();
 		}
 	}
 
