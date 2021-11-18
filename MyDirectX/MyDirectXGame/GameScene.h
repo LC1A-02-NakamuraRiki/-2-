@@ -106,14 +106,18 @@ public:
 	float EnemyBulletMaxframe;
 	float EnemyBulletFrame2;
 	float EnemyBulletMaxframe2;
+	//ÉåÅ[ÉUÅ[
 	int enemyMoveFlag;
 	float enemyFrame;
 	float enemyMaxFrame;
-	
 	float enemyX;
-
+	//íeñã
 	float bullAngle[EnemyBulletNum];
 	float EnemybullTimer;
+	//ìñÇΩÇËîªíË
 	bool hit[20];
+	int bossHP = 3;
+
+	int active;
 };
 

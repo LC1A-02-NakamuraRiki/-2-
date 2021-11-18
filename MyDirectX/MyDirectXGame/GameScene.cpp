@@ -31,6 +31,10 @@ GameScene::GameScene()
 	enemyMoveFlag = 0;
 	enemyFrame = 0;
 	enemyMaxFrame = 100;
+
+	bossHP = 3;
+
+	active = 0;
 }
 
 GameScene::~GameScene()
@@ -176,8 +180,6 @@ void GameScene::Update()
 		}
 	} else if (sceneNo == 1)
 	{
-		maxshotTimer++;
-
 		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
 		{
 			isSlow = 1;
@@ -241,77 +243,91 @@ void GameScene::Update()
 		}
 
 		/*---------------------敵の弾----------------------*/
-		//レーザー--------------------------------------------------------------
 		float AngleX = position2.x - f.x;
 		float AngleZ = position2.z - f.z;
 		float Angle = atan2(AngleX, AngleZ);
-		if (Angle <= 1.0 && Angle >= -1.0)
+		switch (active)
 		{
-			enemyMoveFlag = 1;
-		}
-		for (int i = 0; i <EnemyBulletNum; i++)
-		{
-			if (enemyMoveFlag == 1)
+		case 0:
+			//レーザー--------------------------------------------------------------
+			
+			if (Angle <= 1.0 && Angle >= -1.0)
 			{
-
-
-				if (EnemyBulletFlag2[i] == false && EnemyBulletFrame2 >= EnemyBulletMaxframe2)
-				{
-					EnemyBulletFlag2[i] = true;
-					enemyBulletPosition2[i].z = position2.z;
-					enemyBulletPosition2[i].x = position2.x;
-					enemyFrame = 0;
-					EnemyBulletFrame2 = 0;
-				}
-
-				if (EnemyBulletFlag2[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
-				{
-					enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
-					enemyBulletPosition2[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
-					enemyBulletPosition2[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
-				}
-				if (enemyFrame >= enemyMaxFrame)
-				{
-					EnemyBulletFlag2[i] = false;
-					enemyMoveFlag = 0;
-				}
-
-			} else {
-				EnemyBulletFlag2[i] = false;
+				enemyMoveFlag = 1;
 			}
-		}
-		//弾幕--------------------------------------------
-		for (int i = 0; i < EnemyBulletNum; i++)
-		{
-			if (EnemybullTimer <= 0)
+			else {
+				active = 1;
+			}
+			for (int i = 0; i < EnemyBulletNum; i++)
 			{
-				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+				if (enemyMoveFlag == 1)
 				{
-					EnemyBulletFlag[i] = true;
-					enemyBulletPosition[i].z = position2.z-9;
-					enemyBulletPosition[i].x = position2.x-5;
-					bullAngle[i] = rand()+1000 / 10000.f * (PI * 2);
+					if (EnemyBulletFlag2[i] == false && EnemyBulletFrame2 >= EnemyBulletMaxframe2)
+					{
+						EnemyBulletFlag2[i] = true;
+						enemyBulletPosition2[i].z = position2.z;
+						enemyBulletPosition2[i].x = position2.x;
+						enemyFrame = 0;
+						EnemyBulletFrame2 = 0;
+					}
+
+					if (EnemyBulletFlag2[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
+					{
+						enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
+						enemyBulletPosition2[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
+						enemyBulletPosition2[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
+					}
+					if (enemyFrame >= enemyMaxFrame)
+					{
+						EnemyBulletFlag2[i] = false;
+						enemyMoveFlag = 0;
+					}
 
 				}
 			}
+			break;
 
-			if (EnemyBulletFlag[i] == true)
+		case 1:
+			//弾幕--------------------------------------------
+			for (int i = 0; i < EnemyBulletNum; i++)
 			{
-				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
-				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
-
-				if (enemyBulletPosition[i].z >= 50.0f || enemyBulletPosition[i].z <= -50.0f
-					|| enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
+				if (EnemybullTimer <= 0)
 				{
-					EnemyBulletFlag[i] = false;
-					EnemyBulletFrame = 0;
-					EnemybullTimer = 120;
-					enemyBulletPosition[i].z = 0;
-					enemyBulletPosition[i].x = 0;
-				}
-			}
-		}
+					if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
+					{
+						EnemyBulletFlag[i] = true;
+						enemyBulletPosition[i].z = position2.z - 9;
+						enemyBulletPosition[i].x = position2.x - 5;
+						bullAngle[i] = rand() + 1000 / 10000.f * (PI * 2);
 
+					}
+				}
+
+				if (EnemyBulletFlag[i] == true)
+				{
+					enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
+					enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
+
+					if (enemyBulletPosition[i].z > 50.0f || enemyBulletPosition[i].z < -50.0f
+						|| enemyBulletPosition[i].x > 50.0f || enemyBulletPosition[i].x < -50.0f)
+					{
+						EnemyBulletFlag[i] = false;
+						EnemyBulletFrame = 0;
+						EnemybullTimer = 120;
+						enemyBulletPosition[i].z = 0;
+						enemyBulletPosition[i].x = 0;
+					}
+				}
+				if (Angle <= 1.0 && Angle >= -1.0)
+				{
+					active = 0;
+				}
+				
+			}
+			break;
+		default:
+			break;
+		}
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 4;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
@@ -341,7 +357,7 @@ void GameScene::Update()
 		EnemybullTimer--;
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f  position %f %f, flag = %d %f", enemyFrame, f.z, f.x, enemyMoveFlag, Angle);
+		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, f.z, f.x, enemyMoveFlag, Angle, bossHP);
 		debugText.Print(str, 20, 20, 1.5f);
 
 		float r = 1;
@@ -350,8 +366,17 @@ void GameScene::Update()
 			hit[i] = Collision::ChenkSphere2Sphere(position[i].x, position[i].y, position[i].z, position2.x - 5.48f, position2.y + 10.0f, position2.z - 8.8f, 1.0f, 1.0f);
 			if (hit[i] == true)
 			{
+				hit[i] = false;
+				BulletFlag[i] = false;
+				bossHP -= 1;
 				debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + (3 * i), 1.5f);
-				//sceneNo = 2;
+			}
+			else {
+				debugText.Print("Eye", 20, 120 + (3 * i), 1.5f);
+			}
+			if (bossHP == 0)
+			{
+				sceneNo = 2;
 			}
 		}
 	} else if (sceneNo == 2)
@@ -422,10 +447,10 @@ void GameScene::Draw()
 
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
-		if (EnemyBulletFlag[i] == true /*&& enemyMoveFlag == 1*/) {
+		if (EnemyBulletFlag[i] == true && active == 1) {
 			EnemyBullet[i]->Draw();
 		}
-		if (EnemyBulletFlag2[i] == true /*&& enemyMoveFlag == 1*/) {
+		if (EnemyBulletFlag2[i] == true && active == 0) {
 			EnemyBullet2[i]->Draw();
 		}
 	}
