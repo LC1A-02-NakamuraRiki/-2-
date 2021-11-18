@@ -163,24 +163,21 @@ void GameScene::Update()
 		{
 			sceneNo = 1;
 		}
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 		maxshotTimer++;
 
 		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
 		{
 			isSlow = 1;
-		}
-		else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
+		} else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
 		{
 			isSlow = 0;
 		}
 		if (isSlow == 1 && slowValue > 0.0625)
 		{
 			slowValue -= 0.03125;
-		}
-		else if (isSlow == 0 && slowValue < 1.0)
+		} else if (isSlow == 0 && slowValue < 1.0)
 		{
 			slowValue += 0.03125;
 		}
@@ -203,8 +200,7 @@ void GameScene::Update()
 		// カメラ移動
 		if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 		{
-			if (input->PushKey(DIK_D)) { angle -= 5.0f * slowValue; }
-			else if (input->PushKey(DIK_A)) { angle += 5.0f * slowValue; }
+			if (input->PushKey(DIK_D)) { angle -= 5.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle += 5.0f * slowValue; }
 
 		}
 
@@ -235,18 +231,18 @@ void GameScene::Update()
 
 		/*---------------------敵の弾----------------------*/
 		//レーザー--------------------------------------------------------------
-		float AngleX = f.x - position2.x;
-		float AngleZ = f.z - position2.z;
+		float AngleX = position2.x - f.x;
+		float AngleZ = position2.z - f.z;
 		float Angle = atan2(AngleX, AngleZ);
-		if (Angle < 2.5 && Angle < -1.9)
+		if (Angle <= 1.0 && Angle >= -1.0)
 		{
 			enemyMoveFlag = 1;
 		}
-
-		if (enemyMoveFlag == 1)
+		for (int i = 0; i < 20; i++)
 		{
-			for (int i = 0; i < 20; i++)
+			if (enemyMoveFlag == 1)
 			{
+
 
 				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 				{
@@ -268,9 +264,11 @@ void GameScene::Update()
 					EnemyBulletFlag[i] = false;
 					enemyMoveFlag = 0;
 				}
+
+			} else {
+				EnemyBulletFlag[i] = false;
 			}
 		}
-
 		//弾幕--------------------------------------------
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
@@ -287,19 +285,11 @@ void GameScene::Update()
 
 			if (EnemyBulletFlag[i] == true)
 			{
-<<<<<<< HEAD
-				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2;
-				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2;
-
-				if (enemyBulletPosition[i].z >= 50.0f || enemyBulletPosition[i].z <= -50.0f ||
-					enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
-=======
 				enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
 				enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
-						
-				if (enemyBulletPosition[i].z >= 50.0f|| enemyBulletPosition[i].z <= -50.0f
+
+				if (enemyBulletPosition[i].z >= 50.0f || enemyBulletPosition[i].z <= -50.0f
 					|| enemyBulletPosition[i].x >= 50.0f || enemyBulletPosition[i].x <= -50.0f)
->>>>>>> origin/EnemyBullet
 				{
 					EnemyBulletFlag[i] = false;
 					EnemyBulletFrame = 0;
@@ -349,27 +339,24 @@ void GameScene::Update()
 				//sceneNo = 2;
 			}
 		}
-	}
-	else if (sceneNo == 2)
+	} else if (sceneNo == 2)
 	{
-	debugText.Print("Clear", 20, 20, 1.5f);
-	if (input->TriggerKey(DIK_SPACE))
+		debugText.Print("Clear", 20, 20, 1.5f);
+		if (input->TriggerKey(DIK_SPACE))
+		{
+			sceneNo = 4;
+		}
+	} else if (sceneNo == 3)//初期化用
 	{
-		sceneNo = 4;
-	}
-	}
-	else if (sceneNo == 3)//初期化用
+		debugText.Print("gameover", 20, 20, 1.5f);
+		if (input->TriggerKey(DIK_SPACE))
+		{
+			sceneNo = 4;
+		}
+	} else if (sceneNo == 4)//初期化用
 	{
-	debugText.Print("gameover", 20, 20, 1.5f);
-	if (input->TriggerKey(DIK_SPACE))
-	{
-		sceneNo = 4;
-	}
-}
-	else if (sceneNo == 4)//初期化用
-	{
-	debugText.Print("gameover", 20, 20, 1.5f);
-	sceneNo = 0;
+		debugText.Print("gameover", 20, 20, 1.5f);
+		sceneNo = 0;
 	}
 }
 
@@ -385,16 +372,13 @@ void GameScene::Draw()
 	if (sceneNo == 0)
 	{
 		spriteBG->Draw();
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 
-	}
-	else if (sceneNo == 2)
+	} else if (sceneNo == 2)
 	{
 		spriteBG->Draw();
-	}
-	else if (sceneNo == 3)
+	} else if (sceneNo == 3)
 	{
 		spriteBG->Draw();
 	}
@@ -443,16 +427,13 @@ void GameScene::Draw()
 	if (sceneNo == 0)
 	{
 		title->Draw();
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 
-	}
-	else if (sceneNo == 2)
+	} else if (sceneNo == 2)
 	{
 		clear->Draw();
-	}
-	else if (sceneNo == 3)
+	} else if (sceneNo == 3)
 	{
 		gameover->Draw();
 	}
