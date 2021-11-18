@@ -216,7 +216,7 @@ void GameScene::Update()
 		}
 
 		//’e‚ÌˆÚ“®-----------------------------------------------------------------
-		for (int i = 0; i < EnemyBulletNum; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			if (input->TriggerMouse(0)) {
 				if (BulletFlag[i] == false && shotTimer <= maxshotTimer) {
@@ -249,7 +249,7 @@ void GameScene::Update()
 		{
 			enemyMoveFlag = 1;
 		}
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i <EnemyBulletNum; i++)
 		{
 			if (enemyMoveFlag == 1)
 			{
@@ -283,7 +283,7 @@ void GameScene::Update()
 		//’e–‹--------------------------------------------
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
-			if (EnemybullTimer >= 0)
+			if (EnemybullTimer <= 0)
 			{
 				if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 				{

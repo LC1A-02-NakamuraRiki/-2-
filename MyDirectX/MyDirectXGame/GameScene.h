@@ -95,7 +95,7 @@ public:
 	float frame;
 	float maxframe;
 	float x;
-	float PI = 3.141592;
+	const float PI = 3.141592;
 	//ƒXƒ[•Ï”
 	float slowValue = 1.0f;
 	bool isSlow = 0;
