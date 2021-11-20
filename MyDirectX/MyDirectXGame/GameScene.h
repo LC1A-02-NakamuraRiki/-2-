@@ -68,6 +68,7 @@ private: // メンバ変数
 	Sprite *title = nullptr;
 	Sprite *clear = nullptr;
 	Sprite *gameover = nullptr;
+	Sprite *warningMark = nullptr;
 	//弾-------------------------------
 	Object3d* playerObj[20] = { nullptr };
 	Model *playerModel = nullptr;
@@ -83,6 +84,9 @@ private: // メンバ変数
 	//背景-------------------------------
 	Object3d *skydomeObj = nullptr;
 	Model *skydomeModel = nullptr;
+	//プレスの頭
+	Object3d *pressObj = nullptr;
+	Model *pressModel = nullptr;
 public:
 	//シーン変数
 	int sceneNo = 0;
@@ -126,5 +130,9 @@ public:
 	float shakeY;
 	float shakeZ;
 	float shakeCount;
+
+	//プレス
+	bool nowPressAttack = 0;
+	int pressCount = 0;
 };
 

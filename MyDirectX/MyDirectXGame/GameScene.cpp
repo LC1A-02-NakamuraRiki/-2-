@@ -48,6 +48,7 @@ GameScene::~GameScene()
 	safe_delete(spriteBG);
 	safe_delete(title);
 	safe_delete(clear);
+	safe_delete(warningMark);
 	safe_delete(playerModel);
 	safe_delete(EnemyBulletModel);
 	for (int i = 0; i < 20; i++)
@@ -63,6 +64,8 @@ GameScene::~GameScene()
 
 	safe_delete(playerModel2);
 	safe_delete(playerObj2);
+	safe_delete(pressObj);
+	safe_delete(pressModel);
 }
 
 void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
@@ -101,11 +104,16 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		assert(0);
 		return;
 	}
+	if (!Sprite::LoadTexture(5, L"Resources/warningMark.png")) {
+		assert(0);
+		return;
+	}
 	//// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	title = Sprite::Create(2, { 0.0f,0.0f });
 	clear = Sprite::Create(3, { 0.0f,0.0f });
 	gameover = Sprite::Create(4, { 0.0f,0.0f });
+	warningMark = Sprite::Create(5, { 0.0f,0.0f });
 	// 3Dオブジェクト生成
 
 
@@ -134,12 +142,21 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		EnemyBullet2[i]->Update();
 	}
 
-	playerModel = playerModel2->CreateFromObject("temp");
+	playerModel = playerModel2->CreateFromObject("temprobot");
 	playerObj2 = Object3d::Create();
 	playerObj2->LinkModel(playerModel);
-	playerObj2->SetPosition({ +5.48f, -10.0f, +8.8f });
-	playerObj2->SetScale({ 4.0f,4.0f,4.0f });
+	playerObj2->SetRotation({ 0.0f,0.0f,0.0f });
+	playerObj2->SetPosition({ 0.0f, -4.0f, 0.0f });
+	playerObj2->SetScale({ 5.0f,5.0f,5.0f });
 	playerObj2->Update();
+
+	pressModel = pressModel->CreateFromObject("temprobot");
+	pressObj = Object3d::Create();
+	pressObj->LinkModel(pressModel);
+	pressObj->SetRotation({ 0.0f,0.0f,0.0f });
+	pressObj->SetPosition({ 0.0f, -4.0f, 0.0f });
+	pressObj->SetScale({ 5.0f,5.0f,5.0f });
+	pressObj->Update();
 
 	skydomeModel = skydomeModel->CreateFromObject("skydome");
 	skydomeObj = Object3d::Create();
@@ -186,21 +203,21 @@ void GameScene::Update()
 		}
 	} else if (sceneNo == 1)
 	{
-		
-
 		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
 		{
 			isSlow = 1;
-		} else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
+		}
+		else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
 		{
 			isSlow = 0;
 		}
-		if (isSlow == 1 && slowValue > 0.0625)
+		if (isSlow == 1 && slowValue > 0.25)
 		{
-			slowValue -= 0.03125;
-		} else if (isSlow == 0 && slowValue < 1.0)
+			slowValue -= 0.25;
+		}
+		else if (isSlow == 0 && slowValue < 1.0)
 		{
-			slowValue += 0.03125;
+			slowValue += 0.25;
 		}
 
 		//ボスをターゲットにしたカメラ回転--------------------------------------
@@ -209,7 +226,7 @@ void GameScene::Update()
 		//angleラジアンだけy軸まわりに回転。半径は-100
 		XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
 		XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-		XMVECTOR bossTarget = { position2.x - 5.48,  position2.y + 10,  position2.z - 8.8 };
+		XMVECTOR bossTarget = { 0,0,0};
 		XMVECTOR v3 = bossTarget + v;
 		XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
@@ -223,6 +240,11 @@ void GameScene::Update()
 		{
 			if (input->PushKey(DIK_D)) { angle -= 5.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle += 5.0f * slowValue; }
 
+		}
+
+		if (input->PushKey(DIK_B))
+		{
+			nowPressAttack = 1;
 		}
 
 		//弾の移動-----------------------------------------------------------------
@@ -241,8 +263,8 @@ void GameScene::Update()
 			if (BulletFlag[i] == true) {
 				if (frame >= 0 && frame <= maxframe) {
 					x = static_cast<float>(frame) / static_cast<float>(maxframe);
-					position[i].x = f.x + ((position2.x - 5.48) - f.x) * (sin(x * PI / 2));
-					position[i].z = f.z + ((position2.z - 8.8) - f.z) * (sin(x * PI / 2));
+					position[i].x = f.x + ((position2.x ) - f.x) * (sin(x * PI / 2));
+					position[i].z = f.z + ((position2.z ) - f.z) * (sin(x * PI / 2));
 				}
 			}
 			if (frame > maxframe) {
@@ -340,6 +362,41 @@ void GameScene::Update()
 				
 			}
 			break;
+		case3:
+			if (nowPressAttack == 1)
+			{
+				pressCount += 1 * slowValue;
+				XMFLOAT3 pressPos = pressObj->GetPosition();
+				XMFLOAT3 bossRotation = pressObj->GetRotation();
+				if (pressCount <= 1)
+				{
+					pressPos.y = 30;
+				}
+				if (pressCount <= 40)
+				{
+					pressPos.x = cameraEye.x;
+					pressPos.z = cameraEye.z;
+					bossRotation.y += 5 * slowValue;
+				}
+				else if (pressCount >= 50)
+				{
+					if (pressPos.y >= -8)
+					{
+						pressPos.y -= 2 * slowValue;
+					}
+				}
+				if (pressCount >= 90)
+				{
+					nowPressAttack = 0;
+					bossRotation.y = 0;
+					pressPos.y = 30;
+					pressCount = 0;
+				}
+				pressObj->SetRotation(bossRotation);
+				pressObj->SetPosition(pressPos);
+				pressObj->Update();
+			}
+			break;
 		default:
 			break;
 		}
@@ -409,16 +466,17 @@ void GameScene::Update()
 		float r = 1;
 		for (int i = 0; i < 20; i++)
 		{
-			hit[i] = Collision::ChenkSphere2Sphere(position[i].x, position[i].y, position[i].z, position2.x - 5.48f, position2.y + 10.0f, position2.z - 8.8f, 1.0f, 1.0f);
-			if (hit[i] == true)
+			hit[i] = Collision::ChenkSphere2Sphere(position[i].x, position[i].y, position[i].z, position2.x, position2.y, position2.z, 10.0f, 10.0f);
+			if (hit[i] == true && BulletFlag[i] == true)
 			{
-				hit[i] = false;
 				BulletFlag[i] = false;
+				frame = 0;
 				bossHP -= 1;
 				debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + (3 * i), 1.5f);
 			}
 			else {
-				debugText.Print("Eye", 20, 120 + (3 * i), 1.5f);
+				//debugText.Print("Eye", 20, 120 + (3 * i), 1.5f);
+				hit[i] = 0;
 			}
 			if (bossHP == 0)
 			{
@@ -500,7 +558,10 @@ void GameScene::Draw()
 			EnemyBullet2[i]->Draw();
 		}
 	}
-
+	if (nowPressAttack == 1)
+	{
+		pressObj->Draw();
+	}
 	playerObj2->Draw();
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
@@ -518,7 +579,10 @@ void GameScene::Draw()
 		title->Draw();
 	} else if (sceneNo == 1)
 	{
-
+		if (nowPressAttack == 1)
+		{
+			warningMark->Draw();
+		}
 	} else if (sceneNo == 2)
 	{
 		clear->Draw();
