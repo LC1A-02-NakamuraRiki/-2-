@@ -405,6 +405,7 @@ void GameScene::Update()
 		{
 			shakeCount = 0;
 			shakeFlag = false;
+			position2 = { 0,0,0 };
 		}
 		if (shakeFlag == false)
 		{
@@ -413,13 +414,13 @@ void GameScene::Update()
 			shakeZ = 0.0f;
 		} else
 		{
-			shakeX = rand() % 1000 - 500;
-			shakeY = rand() % 1000 - 500;
-			shakeZ = rand() % 1000 - 500;
+			shakeX = rand() % 5 - 2.5;
+			shakeY = rand() % 5 - 2.5;
+			//shakeZ = rand() % 10 - 5;
 
 			position2.x += shakeX;
 			position2.y += shakeY;
-			position2.z += shakeZ;
+			//position2.z += shakeZ;
 			shakeCount++;
 		}
 
@@ -446,6 +447,7 @@ void GameScene::Update()
 			EnemyBullet2[i]->SetPosition(enemyBulletPosition2[i]);
 			EnemyBullet2[i]->Update();
 		}
+		playerObj2->SetPosition(position2);
 		playerObj2->Update();
 		skydomeObj->Update();
 		//タイマー-------------------------
