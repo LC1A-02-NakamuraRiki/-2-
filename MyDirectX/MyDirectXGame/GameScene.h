@@ -70,7 +70,7 @@ private: // メンバ変数
 	Sprite *gameover = nullptr;
 	Sprite *warningMark = nullptr;
 	//弾-------------------------------
-	Object3d* playerObj[20] = { nullptr };
+	Object3d* playerObj = nullptr ;
 	Model *playerModel = nullptr;
 	//敵の弾-------------------------------
 	static const int EnemyBulletNum = 100;
@@ -90,10 +90,14 @@ private: // メンバ変数
 public:
 	//シーン変数
 	int sceneNo = 0;
+	float nowTime = 0;
+	float endTime = 1.0;
+	float timeRate = 0;
+	bool isChange = false;
 	//カメラ変数
 	float angle = 0.0f;
 	//自機の弾変数
-	bool BulletFlag[20];
+	bool BulletFlag;
 	float shotTimer;
 	float maxshotTimer;
 	float frame;
@@ -119,8 +123,11 @@ public:
 	float bullAngle[EnemyBulletNum];
 	float EnemybullTimer;
 	//当たり判定
-	bool hit[20];
-	int bossHP = 3;
+	bool laserHit = 0;
+	bool barrageHit = 0;
+	bool pressHit = 0;
+	bool playerBulletHit = 0;
+	int bossHP = 30;
 
 	int active;
 
@@ -132,6 +139,7 @@ public:
 	float shakeCount;
 
 	//プレス
+	int playerStopCount = 0;
 	bool nowPressAttack = 0;
 	int pressCount = 0;
 };
