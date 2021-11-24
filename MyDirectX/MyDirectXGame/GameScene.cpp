@@ -341,10 +341,10 @@ void GameScene::Update()
 					if (EnemyBulletFlag2[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
 					{
 						enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
-						enemyBulletPosition2[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
-						enemyBulletPosition2[i].z = position2.z + (f.z - position2.z) * (sin(enemyX * PI / 2));
+						//enemyBulletPosition2[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
+						enemyBulletPosition2[i].z -= 2 * slowValue;
 					}
-					if (enemyFrame >= enemyMaxFrame)
+					if (enemyBulletPosition2[i].z <= -60)
 					{
 						EnemyBulletFlag2[i] = false;
 						enemyMoveFlag = 0;
