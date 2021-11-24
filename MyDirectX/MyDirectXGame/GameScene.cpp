@@ -326,23 +326,21 @@ void GameScene::Update()
 			{
 				if (enemyMoveFlag == 1)
 				{
-					if (EnemyBulletFlag2 == false && EnemyBulletFrame2 >= EnemyBulletMaxframe2)
+					if (EnemyBulletFlag2 == false)
 					{
 						EnemyBulletFlag2 = true;
 						enemyBulletPosition2.z = position2.z;
 						enemyBulletPosition2.x = position2.x;
-						enemyFrame = 0;
-						EnemyBulletFrame2 = 0;
 						lFrame = 0;
 					}
 
 					if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
 					{
-						lAngleY += angle * 0.5f;
+						lAngleY += angle * 0.1f;
 						EnemyBullet2->SetRotation({ 0,lAngleY,0 });
 						lFrame = 0;
 					}
-					if (lAngleY == angle)
+					if (lAngleY == angle && lAngleY <= angle && lAngleY >= angle)
 					{
 						EnemyBulletFlag2 = false;
 					}
@@ -448,7 +446,7 @@ void GameScene::Update()
 
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, position2.z, position2.x, enemyMoveFlag, shakeCount, bossHP);
+		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, angle, lAngleY, enemyMoveFlag, shakeCount, bossHP);
 		debugText.Print(str, 20, 20, 1.5f);
 
 
