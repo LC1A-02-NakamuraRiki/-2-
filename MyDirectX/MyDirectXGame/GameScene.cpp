@@ -329,8 +329,8 @@ void GameScene::Update()
 					if (EnemyBulletFlag2 == false)
 					{
 						EnemyBulletFlag2 = true;
-						enemyBulletPosition2.z = position2.z;
-						enemyBulletPosition2.x = position2.x;
+						enemyBulletPosition2.z = 0;
+						enemyBulletPosition2.x = 0;
 						lFrame = 0;
 					}
 
