@@ -66,7 +66,7 @@ private: // メンバ変数
 	/// </summary>
 	Sprite *spriteBG = nullptr;
 	Sprite* title[12] = { nullptr };
-	Sprite *clear = nullptr;
+	Sprite* clear[9] = { nullptr };
 	Sprite *gameover = nullptr;
 	Sprite *warningMark = nullptr;
 	//弾-------------------------------
@@ -149,6 +149,10 @@ public:
 	//タイトル
 	float animationTimer;
 	int animationCount;
+
+	//クリア
+	float clearTimer;
+	int clearCount;
 
 };
 

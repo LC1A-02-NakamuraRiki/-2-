@@ -44,6 +44,9 @@ GameScene::GameScene()
 
 	animationTimer = 0;
 	animationCount = 0;
+
+	clearTimer = 0;
+	clearCount = 0;
 }
 
 GameScene::~GameScene()
@@ -52,7 +55,9 @@ GameScene::~GameScene()
 	for (int i = 0; i < 12; i++) {
 		safe_delete(title[i]);
 	}
-	safe_delete(clear);
+	for (int i = 0; i < 9; i++) {
+		safe_delete(clear[i]);
+	}
 	safe_delete(warningMark);
 	safe_delete(playerModel);
 	safe_delete(EnemyBulletModel);
@@ -97,76 +102,117 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		assert(0);
 		return;
 	}
+	if (!Sprite::LoadTexture(2, L"Resources/gameover.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(3, L"Resources/warningMark.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(4, L"Resources/title1.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(5, L"Resources/title2.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(6, L"Resources/title3.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(7, L"Resources/title4.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(8, L"Resources/title5.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(9, L"Resources/title6.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(10, L"Resources/title7.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(11, L"Resources/title8.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(12, L"Resources/title9.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(13, L"Resources/title10.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(14, L"Resources/title11.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(15, L"Resources/title12.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(16, L"Resources/clear1.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(17, L"Resources/clear2.png")) {
+		assert(0);
+		return;
+	}
 
-	if (!Sprite::LoadTexture(2, L"Resources/clear.png")) {
+	if (!Sprite::LoadTexture(18, L"Resources/clear3.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(3, L"Resources/gameover.png")) {
+
+	if (!Sprite::LoadTexture(19, L"Resources/clear4.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(4, L"Resources/warningMark.png")) {
+
+	if (!Sprite::LoadTexture(20, L"Resources/clear5.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(5, L"Resources/title1.png")) {
+
+	if (!Sprite::LoadTexture(21, L"Resources/clear6.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(6, L"Resources/title2.png")) {
+
+	if (!Sprite::LoadTexture(22, L"Resources/clear7.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(7, L"Resources/title3.png")) {
+
+	if (!Sprite::LoadTexture(23, L"Resources/clear8.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(8, L"Resources/title4.png")) {
+
+	if (!Sprite::LoadTexture(24, L"Resources/clear9.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(9, L"Resources/title5.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(10, L"Resources/title6.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(11, L"Resources/title7.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(12, L"Resources/title8.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(13, L"Resources/title9.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(14, L"Resources/title10.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(15, L"Resources/title11.png")) {
-		assert(0);
-		return;
-	}
-	if (!Sprite::LoadTexture(16, L"Resources/title12.png")) {
-		assert(0);
-		return;
-	}
+
 
 	//// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	for (int i = 0; i < 12; i++) {
-		title[i] = Sprite::Create(5 + i, { 0.0f,0.0f });
+		title[i] = Sprite::Create(4 + i, { 0.0f,0.0f });
 	}
-	clear = Sprite::Create(2, { 0.0f,0.0f });
-	gameover = Sprite::Create(3, { 0.0f,0.0f });
-	warningMark = Sprite::Create(4, { 0.0f,0.0f });
+	for (int i = 0; i < 9; i++) {
+		clear[i] = Sprite::Create(16 +i, { 0.0f,0.0f });
+	}
+	gameover = Sprite::Create(2, { 0.0f,0.0f });
+	warningMark = Sprite::Create(3, { 0.0f,0.0f });
 	// 3Dオブジェクト生成
 
 
@@ -605,6 +651,16 @@ void GameScene::Update()
 	} else if (sceneNo == 2)
 	{
 		debugText.Print("Clear", 20, 20, 1.5f);
+		clearTimer++;
+		if (clearTimer >= 5)
+		{
+			clearCount++;
+			clearTimer = 0;
+			if (clearCount == 8)
+			{
+				clearCount = 0;
+			}
+		}
 		if (input->TriggerKey(DIK_SPACE))
 		{
 			sceneNo = 4;
@@ -658,6 +714,9 @@ void GameScene::Update()
 
 		animationTimer = 0;
 		animationCount = 0;
+
+		clearTimer = 0;
+		clearCount = 0;
 
 		angle = 0;
 
@@ -792,7 +851,7 @@ void GameScene::Draw()
 		}
 	} else if (sceneNo == 2)
 	{
-		clear->Draw();
+		clear[clearCount]->Draw();
 	} else if (sceneNo == 3)
 	{
 		gameover->Draw();
