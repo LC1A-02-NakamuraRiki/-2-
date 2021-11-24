@@ -69,6 +69,7 @@ private: // メンバ変数
 	Sprite* clear[9] = { nullptr };
 	Sprite *gameover = nullptr;
 	Sprite *warningMark = nullptr;
+	Sprite *slowUi = nullptr;
 	//弾-------------------------------
 	Object3d* playerObj = nullptr ;
 	Model *playerModel = nullptr;
@@ -87,6 +88,9 @@ private: // メンバ変数
 	//プレスの頭
 	Object3d *pressObj = nullptr;
 	Model *pressModel = nullptr;
+	//自分
+	Object3d *playerDroneObj = nullptr;
+	Model *playerDroneModel = nullptr;
 public:
 	//シーン変数
 	int sceneNo = 0;
@@ -105,6 +109,9 @@ public:
 	//スロー変数
 	float slowValue = 1.0f;
 	bool isSlow = 0;
+	float slowCount = 100;
+	bool delay = 0;
+	int slowDelay = 0;
 	//エネミー弾変数
 	bool EnemyBulletFlag[EnemyBulletNum];
 	bool EnemyBulletFlag2;
