@@ -59,6 +59,7 @@ GameScene::~GameScene()
 		safe_delete(clear[i]);
 	}
 	safe_delete(warningMark);
+	safe_delete(slowUi);
 	safe_delete(playerModel);
 	safe_delete(EnemyBulletModel);
 	for (int i = 0; i < 20; i++)
@@ -76,6 +77,8 @@ GameScene::~GameScene()
 	safe_delete(playerObj2);
 	safe_delete(pressObj);
 	safe_delete(pressModel);
+	safe_delete(playerDroneObj);
+	safe_delete(playerDroneModel);
 }
 
 void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
@@ -202,7 +205,10 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		return;
 	}
 
-
+	if (!Sprite::LoadTexture(25, L"Resources/slowUI.png")) {
+		assert(0);
+		return;
+	}
 	//// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	for (int i = 0; i < 12; i++) {
@@ -213,6 +219,11 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	}
 	gameover = Sprite::Create(2, { 0.0f,0.0f });
 	warningMark = Sprite::Create(3, { 0.0f,0.0f });
+
+	slowUi = Sprite::Create(25, { 0.0f,0.0f });
+	slowUi->SetSize({ 32.0f,656.0f });
+	slowUi->SetPosition({ 32.0f,688.0f });
+	slowUi->SetIsFlipY(1);
 	// 3Dオブジェクト生成
 
 
@@ -225,6 +236,12 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	playerObj->SetScale({ 0.5f,0.5f,0.5f });
 	playerObj->Update();
 
+	playerDroneModel = playerDroneModel->CreateFromObject("player");
+	playerDroneObj = Object3d::Create();
+	playerDroneObj->LinkModel(playerDroneModel);
+	playerDroneObj->SetPosition({ 0.0f, -10.0f, -55.0f });
+	playerDroneObj->SetScale({ 5.0f,5.0f,5.0f });
+	playerDroneObj->Update();
 
 	EnemyBulletModel = EnemyBulletModel->CreateFromObject("enemyBullet");
 	for (int i = 0; i < EnemyBulletNum; i++)
@@ -307,11 +324,11 @@ void GameScene::Update()
 			nowTime += 0.01;
 			timeRate = min(nowTime / endTime, 1);
 
-			cameraEye.x = 15 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
-			cameraEye.y = 40 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
-			cameraEye.z = -10 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + -50 * (timeRate * timeRate) * (3 - (2 * timeRate));
-			cameraTarget.x = 90 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
-			cameraTarget.y = 90 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
+			cameraEye.x = 75 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
+			cameraEye.y = 30 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
+			cameraEye.z = -50 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + -50 * (timeRate * timeRate) * (3 - (2 * timeRate));
+			cameraTarget.x = -90 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
+			cameraTarget.y = 40 * (1.0f - (timeRate * timeRate) * (3 - (2 * timeRate))) + 0 * (timeRate * timeRate) * (3 - (2 * timeRate));
 
 			Object3d::SetEye(cameraEye);
 			Object3d::SetTarget(cameraTarget);
@@ -342,24 +359,56 @@ void GameScene::Update()
 				animationCount = 0;
 			}
 		}
+		playerDroneObj->Update();
 	} else if (sceneNo == 1)
 	{
 		playerStopCount++;
 
-		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
+		if (input->PushKey(DIK_SPACE) && slowCount > 0 && delay == 0)
 		{
 			isSlow = 1;
-		} else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
+		}
+		else
 		{
 			isSlow = 0;
 		}
 		if (isSlow == 1 && slowValue > 0.25)
 		{
 			slowValue -= 0.25;
-		} else if (isSlow == 0 && slowValue < 1.0)
+		}
+		else if (isSlow == 0 && slowValue < 1.0)
 		{
 			slowValue += 0.25;
 		}
+
+		//増える
+		if (isSlow == 1)
+		{
+			slowCount -= 1;
+		}
+		//減る
+		if (isSlow == 0 && slowCount <= 99)
+		{
+			slowCount += 1;
+		}
+
+		if (slowCount < 1)
+		{
+			isSlow = 0;
+			delay = 1;
+		}
+
+		if (delay == 1)
+		{
+			slowDelay++;
+		}
+
+		if (slowDelay > 30)
+		{
+			delay = 0;
+			slowDelay = 0;
+		}
+		slowUi->SetSize({ 32.0f,656.0f * (slowCount / 100) });
 
 		//ボスをターゲットにしたカメラ回転--------------------------------------
 		XMFLOAT3 position2 = playerObj2->GetPosition();
@@ -647,6 +696,7 @@ void GameScene::Update()
 		{
 			sceneNo = 2;
 		}
+		
 
 	} else if (sceneNo == 2)
 	{
@@ -768,7 +818,7 @@ void GameScene::Update()
 void GameScene::Draw()
 {
 	// コマンドリストの取得
-	ID3D12GraphicsCommandList* cmdList = dxCommon->GetCommandList();
+	ID3D12GraphicsCommandList *cmdList = dxCommon->GetCommandList();
 
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
@@ -777,13 +827,16 @@ void GameScene::Draw()
 	if (sceneNo == 0)
 	{
 		spriteBG->Draw();
-	} else if (sceneNo == 1)
+	}
+	else if (sceneNo == 1)
 	{
 
-	} else if (sceneNo == 2)
+	}
+	else if (sceneNo == 2)
 	{
 		spriteBG->Draw();
-	} else if (sceneNo == 3)
+	}
+	else if (sceneNo == 3)
 	{
 		spriteBG->Draw();
 	}
@@ -806,8 +859,12 @@ void GameScene::Draw()
 
 	if (BulletFlag == true) {
 		playerObj->Draw();
-	}
 
+	}
+	if (sceneNo == 0)
+	{
+		playerDroneObj->Draw();
+	}
 	if (sceneNo == 1)
 	{
 		for (int i = 0; i < EnemyBulletNum; i++)
@@ -845,6 +902,10 @@ void GameScene::Draw()
 
 	} else if (sceneNo == 1)
 	{
+		if (slowCount > 0)
+		{
+			slowUi->Draw();
+		}
 		if (nowPressAttack == 1)
 		{
 			warningMark->Draw();
