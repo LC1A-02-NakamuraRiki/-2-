@@ -162,7 +162,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	//// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	for (int i = 0; i < 12; i++) {
-		title[i] = Sprite::Create(5+i, { 0.0f,0.0f });
+		title[i] = Sprite::Create(5 + i, { 0.0f,0.0f });
 	}
 	clear = Sprite::Create(2, { 0.0f,0.0f });
 	gameover = Sprite::Create(3, { 0.0f,0.0f });
@@ -287,13 +287,13 @@ void GameScene::Update()
 		}
 		//アニメーション
 		animationTimer++;
-		if(animationTimer >= 5)
+		if (animationTimer >= 5)
 		{
 			animationCount++;
 			animationTimer = 0;
-			if(animationCount == 11)
+			if (animationCount == 11)
 			{
-				animationCount=0;
+				animationCount = 0;
 			}
 		}
 	} else if (sceneNo == 1)
@@ -377,7 +377,7 @@ void GameScene::Update()
 
 			if (Angle < 1.0 && Angle > -1.0)
 			{
-				enemyMoveFlag = 1;
+				EnemyBulletFlag2 = true;
 			} else {
 				shakeFlag = true;
 				EnemyBulletFlag2 = false;
@@ -389,33 +389,30 @@ void GameScene::Update()
 			}
 			for (int i = 0; i < EnemyBulletNum; i++)
 			{
-				if (enemyMoveFlag == 1)
+
+				if (EnemyBulletFlag2 == false)
 				{
-					if (EnemyBulletFlag2 == false)
+					EnemyBulletFlag2 = true;
+					enemyBulletPosition2.z = 0;
+					enemyBulletPosition2.x = 0;
+					lFrame = 0;
+				}
+
+				if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
+				{
+					if (angle <= 0)
 					{
-						EnemyBulletFlag2 = true;
-						enemyBulletPosition2.z = 0;
-						enemyBulletPosition2.x = 0;
-						lFrame = 0;
+						lAngleY -= 5.0f;
+					} else {
+						lAngleY += 5.0f;
 					}
 
-					if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
-					{
-						if (angle <= 0)
-						{
-							lAngleY -= 5.0f;
-						}
-						else {
-							lAngleY += 5.0f;
-						}
-						
-						EnemyBullet2->SetRotation({ 0,lAngleY,0 });
-						lFrame = 0;
-					}
-					if (lAngleY == angle && lAngleY <= angle && lAngleY >= angle)
-					{
-						EnemyBulletFlag2 = false;
-					}
+					EnemyBullet2->SetRotation({ 0,lAngleY,0 });
+					lFrame = 0;
+				}
+				if (lAngleY == angle)
+				{
+					EnemyBulletFlag2 = false;
 				}
 			}
 			break;
@@ -455,6 +452,7 @@ void GameScene::Update()
 				if (Angle <= 1.0 && Angle >= -1.0)
 				{
 					active = 0;
+					lFrame = 0;
 				}
 
 			}
@@ -487,7 +485,7 @@ void GameScene::Update()
 			position2.z += shakeY;
 			shakeCount++;
 		}
-		
+
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 8;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
@@ -519,7 +517,7 @@ void GameScene::Update()
 
 		//デバッグテキスト-------------------
 		char str[256];
-		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, angle, lAngleY, enemyMoveFlag, shakeCount, bossHP);
+		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", lFrame, angle, lAngleY, enemyMoveFlag, shakeCount, bossHP);
 		debugText.Print(str, 20, 20, 1.5f);
 
 
@@ -662,50 +660,50 @@ void GameScene::Update()
 		animationCount = 0;
 
 		angle = 0;
-	
+
 		playerObj->SetPosition({ -5.0f, 0.0f, -100.0f });
 		playerObj->SetScale({ 0.5f,0.5f,0.5f });
 		playerObj->Update();
 
 
-		
+
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
-		
+
 			EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
 			EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
 			EnemyBullet[i]->Update();
 
-		
-			
+
+
 			EnemyBullet2->SetPosition({ 0.0f, 0.3f, 0.0f });
 			EnemyBullet2->SetScale({ 0.5f,0.5f,30.0f });
 			EnemyBullet2->Update();
 		}
 
-	
-	
-		
+
+
+
 		playerObj2->SetRotation({ 0.0f,0.0f,0.0f });
 		playerObj2->SetPosition({ 0.0f, -4.0f, 0.0f });
 		playerObj2->SetScale({ 5.0f,5.0f,5.0f });
 		playerObj2->Update();
 
-	
-	
-		
+
+
+
 		pressObj->SetRotation({ 0.0f,0.0f,0.0f });
 		pressObj->SetPosition({ 0.0f, -4.0f, 0.0f });
 		pressObj->SetScale({ 5.0f,5.0f,5.0f });
 		pressObj->Update();
 
-	
-	
-		
+
+
+
 		skydomeObj->SetScale({ 5.0f,5.0f,5.0f });
 		skydomeObj->Update();
 	}
-	
+
 }
 
 void GameScene::Draw()
@@ -763,7 +761,7 @@ void GameScene::Draw()
 			}
 		}
 	}
-	
+
 	if (nowPressAttack == 1)
 	{
 		pressObj->Draw();
@@ -783,7 +781,7 @@ void GameScene::Draw()
 	if (sceneNo == 0)
 	{
 		title[animationCount]->Draw();
-		
+
 	} else if (sceneNo == 1)
 	{
 		if (nowPressAttack == 1)
