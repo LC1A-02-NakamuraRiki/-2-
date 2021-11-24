@@ -660,6 +660,8 @@ void GameScene::Update()
 
 		animationTimer = 0;
 		animationCount = 0;
+
+		angle = 0;
 	}
 	
 }
