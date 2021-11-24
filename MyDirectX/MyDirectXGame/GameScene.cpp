@@ -180,7 +180,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	playerObj->Update();
 
 
-	EnemyBulletModel = EnemyBulletModel->CreateFromObject("bullet");
+	EnemyBulletModel = EnemyBulletModel->CreateFromObject("enemyBullet");
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBullet[i] = Object3d::Create();
@@ -188,6 +188,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
 		EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
 		EnemyBullet[i]->Update();
+
 		EnemyBullet2 = Object3d::Create();
 		EnemyBullet2->LinkModel(EnemyBulletModel);
 		EnemyBullet2->SetPosition({ 0.0f, 0.3f, 0.0f });
