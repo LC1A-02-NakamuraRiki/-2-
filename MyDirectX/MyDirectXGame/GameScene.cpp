@@ -29,7 +29,7 @@ GameScene::GameScene()
 	enemyFrame = 0;
 	enemyMaxFrame = 100;
 
-	bossHP = 30;
+	bosssHP = 30;
 
 	active = 0;
 
@@ -47,6 +47,7 @@ GameScene::GameScene()
 
 	clearTimer = 0;
 	clearCount = 0;
+	playersHP = 5;
 }
 
 GameScene::~GameScene()
@@ -209,6 +210,14 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		assert(0);
 		return;
 	}
+	if (!Sprite::LoadTexture(26, L"Resources/playerHP.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(27, L"Resources/enemyHP.png")) {
+		assert(0);
+		return;
+	}
 	//// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
 	for (int i = 0; i < 12; i++) {
@@ -221,9 +230,17 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	warningMark = Sprite::Create(3, { 0.0f,0.0f });
 
 	slowUi = Sprite::Create(25, { 0.0f,0.0f });
-	slowUi->SetSize({ 32.0f,656.0f });
-	slowUi->SetPosition({ 32.0f,688.0f });
-	slowUi->SetIsFlipY(1);
+	slowUi->SetSize({ 512.0f,16.0f });
+	slowUi->SetPosition({ 32.0f,656.0f });
+
+	playerHP = Sprite::Create(26, { 0.0f,0.0f });
+	playerHP->SetSize({ 256.0f,16.0f });
+	playerHP->SetPosition({ 32.0f,688.0f });
+
+	enemyHP = Sprite::Create(27, { 0.0f,0.0f });
+	enemyHP->SetSize({ 1216.0f,32.0f });
+	enemyHP->SetPosition({ 32.0f,32.0f });
+
 	// 3Dオブジェクト生成
 
 
@@ -244,20 +261,23 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	playerDroneObj->Update();
 
 	EnemyBulletModel = EnemyBulletModel->CreateFromObject("enemyBullet");
+	EnemyBulletModel2 = EnemyBulletModel2->CreateFromObject("lazer");
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBullet[i] = Object3d::Create();
 		EnemyBullet[i]->LinkModel(EnemyBulletModel);
-		EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
+		EnemyBullet[i]->SetPosition({ -5.0f, -2.0f, 0.0f });
 		EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
 		EnemyBullet[i]->Update();
 
-		EnemyBullet2 = Object3d::Create();
-		EnemyBullet2->LinkModel(EnemyBulletModel);
-		EnemyBullet2->SetPosition({ 0.0f, 0.3f, 0.0f });
-		EnemyBullet2->SetScale({ 0.5f,0.5f,30.0f });
-		EnemyBullet2->Update();
+		
 	}
+
+	EnemyBullet2 = Object3d::Create();
+	EnemyBullet2->LinkModel(EnemyBulletModel2);
+	EnemyBullet2->SetPosition({ 0.0f, -5.0f, 0.0f });
+	EnemyBullet2->SetScale({ 5.0f,5.0f,5.0f });
+	EnemyBullet2->Update();
 
 	playerModel = playerModel2->CreateFromObject("temprobot");
 	playerObj2 = Object3d::Create();
@@ -282,9 +302,8 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	skydomeObj->Update();
 	//サウンド再生
 	//audio->PlayWave("Resources/Alarm01.wav");
-	audio->PlayBGM("Resources/Alarm01.wav", false);
-	audio->PlaySE("Resources/Alarm01.wav", false);
-	audio->StopBGM();
+	audio->PlayBGM("Resources/Title.wav", true);
+	//audio->PlaySE("Resources/Alarm01.wav", false);
 }
 
 void GameScene::Update()
@@ -338,6 +357,8 @@ void GameScene::Update()
 			isChange = false;
 			nowTime = 0;
 			timeRate = 0;
+			audio->StopBGM();
+			audio->PlayBGM("Resources/bgm.wav", true);
 		}
 
 		playerObj2->Update();
@@ -362,6 +383,7 @@ void GameScene::Update()
 		playerDroneObj->Update();
 	} else if (sceneNo == 1)
 	{
+		
 		playerStopCount++;
 
 		if (input->PushKey(DIK_SPACE) && slowCount > 0 && delay == 0)
@@ -408,8 +430,9 @@ void GameScene::Update()
 			delay = 0;
 			slowDelay = 0;
 		}
-		slowUi->SetSize({ 32.0f,656.0f * (slowCount / 100) });
-
+		slowUi->SetSize({ 512.0f * (slowCount / 100),16.0f});
+		playerHP->SetSize({ 256.0f * (playersHP / 5),16.0f});
+		enemyHP->SetSize({ 1216.0f * (bosssHP / 30) ,32.0f });
 		//ボスをターゲットにしたカメラ回転--------------------------------------
 		XMFLOAT3 position2 = playerObj2->GetPosition();
 		XMVECTOR v0 = { 0, 0, -50, 0 };
@@ -429,7 +452,7 @@ void GameScene::Update()
 		if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
 		{
 			playerStopCount = 0;
-			if (input->PushKey(DIK_D)) { angle -= 5.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle += 5.0f * slowValue; }
+			if (input->PushKey(DIK_D)) { angle -= 2.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle += 2.0f * slowValue; }
 
 		}
 
@@ -446,7 +469,7 @@ void GameScene::Update()
 				frame = 0;
 				position.x = f.x;
 				position.z = f.z + 300;
-
+				audio->PlaySE("Resources/player_shoot.wav", false);
 			}
 		}
 
@@ -495,13 +518,13 @@ void GameScene::Update()
 
 				if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
 				{
-					if (angle <= 0)
+					/*if (angle <= 0)
 					{
 						lAngleY -= 5.0f;
 					} else {
 						lAngleY += 5.0f;
-					}
-
+					}*/
+					
 					EnemyBullet2->SetRotation({ 0,lAngleY,0 });
 					lFrame = 0;
 				}
@@ -528,9 +551,14 @@ void GameScene::Update()
 
 					}
 				}
-
+				
 				if (EnemyBulletFlag[i] == true)
 				{
+					if (EnemyBulletFrame == 120 && EnemyBulletFlag[i] == true)
+					{
+						audio->PlaySE("Resources/boss_SE_02.wav", false);
+					}
+					
 					enemyBulletPosition[i].x += cos(bullAngle[i]) * 0.5 * slowValue;
 					enemyBulletPosition[i].z += sin(bullAngle[i]) * 0.5 * slowValue;
 
@@ -559,6 +587,15 @@ void GameScene::Update()
 			break;
 		}
 
+		lazerCount++;
+		if (lazerCount == 60)
+		{
+			audio->PlaySE("Resources/boss_SE_01.wav", false);
+		}
+		if (lazerCount >= 120)
+		{
+			lazerCount = 0;
+		}
 		//揺れ-------------------------------------------
 		if (shakeCount > 20)
 		{
@@ -611,9 +648,9 @@ void GameScene::Update()
 		lFrame += 1 * slowValue;
 
 		//デバッグテキスト-------------------
-		char str[256];
-		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", lFrame, angle, lAngleY, enemyMoveFlag, shakeCount, bossHP);
-		debugText.Print(str, 20, 20, 1.5f);
+		/*char str[256];
+		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %f", EnemyBulletFrame, angle, lAngleY, enemyMoveFlag, shakeCount, bosssHP);
+		debugText.Print(str, 20, 20, 1.5f);*/
 
 
 		if (nowPressAttack == 1)
@@ -625,6 +662,10 @@ void GameScene::Update()
 			if (pressCount <= 1)
 			{
 				pressPos.y = 30;
+			}
+			if (pressCount == 40)
+			{
+				audio->PlaySE("Resources/face_crash.wav", false);
 			}
 			if (pressCount <= 40)
 			{
@@ -656,26 +697,30 @@ void GameScene::Update()
 			playerBulletHit = false;
 			BulletFlag = false;
 			frame = 0;
-			bossHP -= 1;
-			debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+			bosssHP -= 1;
+			audio->PlaySE("Resources/boss_damage.wav", false);
+			//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
 		}
 
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
-			laserHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition2.x, enemyBulletPosition2.y, enemyBulletPosition2.z, 0.5f, 1.0f);
-			if (laserHit == true && enemyMoveFlag == true)
+			laserHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, 0, 0, -50, 2.0f, 1.0f);
+			if (laserHit == true && lazerCount >= 60)
 			{
-				laserHit = false;
-				enemyMoveFlag = false;
+				playersHP -= 0.001;
+				//laserHit = false;
 				//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+				audio->PlaySE("Resources/player_damage.wav", false);
 			}
 
-			barrageHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition[i].x, enemyBulletPosition[i].y, enemyBulletPosition[i].z, 0.5f, 0.5f);
+			barrageHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition[i].x, enemyBulletPosition[i].y, enemyBulletPosition[i].z, 1.2f, 1.2f);
 			if (barrageHit == true && EnemyBulletFlag[i] == true)
 			{
+				playersHP--;
 				barrageHit = false;
 				EnemyBulletFlag[i] = false;
 				//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+				audio->PlaySE("Resources/player_damage.wav", false);
 			}
 		}
 		XMFLOAT3 pressPos = pressObj->GetPosition();
@@ -683,24 +728,32 @@ void GameScene::Update()
 		pressHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y - 3, cameraEye.z, pressPos.x, pressPos.y, pressPos.z, 1.5f, 1.5f);
 		if (pressHit == true && nowPressAttack == true)
 		{
-			bossHP--;
 			pressHit = false;
 			nowPressAttack = 0;
 			bossRotation.y = 0;
 			pressPos.y = 30;
 			pressCount = 0;
 			playerStopCount = 0;
-			debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+			playersHP--;
+			//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+			audio->PlaySE("Resources/player_damage.wav", false);
 		}
-		if (bossHP == 0)
+		if (bosssHP <= 0)
 		{
 			sceneNo = 2;
+			audio->StopBGM();
+			audio->PlayBGM("Resources/clear.wav", true);
 		}
-		
+		if (playersHP <= 0)
+		{
+			sceneNo = 3;
+			audio->StopBGM();
+			audio->PlayBGM("Resources/gameover.wav", true);
+		}
 
 	} else if (sceneNo == 2)
 	{
-		debugText.Print("Clear", 20, 20, 1.5f);
+		//debugText.Print("Clear", 20, 20, 1.5f);
 		clearTimer++;
 		if (clearTimer >= 5)
 		{
@@ -714,17 +767,22 @@ void GameScene::Update()
 		if (input->TriggerKey(DIK_SPACE))
 		{
 			sceneNo = 4;
+			audio->StopBGM();
+			audio->PlayBGM("Resources/title.wav", true);
+
 		}
 	} else if (sceneNo == 3)//初期化用
 	{
-		debugText.Print("gameover", 20, 20, 1.5f);
+		//debugText.Print("gameover", 20, 20, 1.5f);
 		if (input->TriggerKey(DIK_SPACE))
 		{
+			audio->StopBGM();
+			audio->PlayBGM("Resources/title.wav", true);
 			sceneNo = 4;
 		}
 	} else if (sceneNo == 4)//初期化用
 	{
-		debugText.Print("gameover", 20, 20, 1.5f);
+		//debugText.Print("gameover", 20, 20, 1.5f);
 		sceneNo = 0;
 
 		BulletFlag = false;
@@ -749,7 +807,7 @@ void GameScene::Update()
 		enemyFrame = 0;
 		enemyMaxFrame = 100;
 
-		bossHP = 30;
+		bosssHP = 30;
 
 		active = 0;
 
@@ -785,12 +843,12 @@ void GameScene::Update()
 
 
 
-			EnemyBullet2->SetPosition({ 0.0f, 0.3f, 0.0f });
-			EnemyBullet2->SetScale({ 0.5f,0.5f,30.0f });
-			EnemyBullet2->Update();
+			
 		}
 
-
+		EnemyBullet2->SetPosition({ 0.0f, -5.0f, 0.0f });
+		EnemyBullet2->SetScale({ 5.0f,5.0f,5.0f });
+		EnemyBullet2->Update();
 
 
 		playerObj2->SetRotation({ 0.0f,0.0f,0.0f });
@@ -811,6 +869,16 @@ void GameScene::Update()
 
 		skydomeObj->SetScale({ 5.0f,5.0f,5.0f });
 		skydomeObj->Update();
+		playersHP = 5;
+		cameraEye.x = 75;
+		cameraEye.y = 30;
+		cameraEye.z = -50;
+		cameraTarget.x = -90;
+		cameraTarget.y = 40;
+
+		Object3d::SetEye(cameraEye);
+		Object3d::SetTarget(cameraTarget);
+		lazerCount = 0;
 	}
 
 }
@@ -872,9 +940,13 @@ void GameScene::Draw()
 			if (EnemyBulletFlag[i] == true && active == 1) {
 				EnemyBullet[i]->Draw();
 			}
-			if (EnemyBulletFlag2 == true && active == 0) {
-				EnemyBullet2->Draw();
-			}
+			/*if (EnemyBulletFlag2 == true && active == 0) {
+				
+			}*/
+		}
+		if (lazerCount >= 60)
+		{
+			EnemyBullet2->Draw();
 		}
 	}
 
@@ -882,7 +954,7 @@ void GameScene::Draw()
 	{
 		pressObj->Draw();
 	}
-	if (bossHP != 0) {
+	if (bosssHP != 0) {
 		playerObj2->Draw();
 	}
 	/// <summary>
@@ -906,6 +978,8 @@ void GameScene::Draw()
 		{
 			slowUi->Draw();
 		}
+		playerHP->Draw();
+		enemyHP->Draw();
 		if (nowPressAttack == 1)
 		{
 			warningMark->Draw();

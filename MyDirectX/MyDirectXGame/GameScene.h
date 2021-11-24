@@ -70,6 +70,8 @@ private: // メンバ変数
 	Sprite *gameover = nullptr;
 	Sprite *warningMark = nullptr;
 	Sprite *slowUi = nullptr;
+	Sprite *enemyHP = nullptr;
+	Sprite *playerHP = nullptr;
 	//弾-------------------------------
 	Object3d* playerObj = nullptr ;
 	Model *playerModel = nullptr;
@@ -78,7 +80,7 @@ private: // メンバ変数
 	Object3d* EnemyBullet[EnemyBulletNum] = { nullptr };
 	Model* EnemyBulletModel = nullptr;
 	Object3d* EnemyBullet2 = { nullptr };
-
+	Model *EnemyBulletModel2 = nullptr;
 	//ボス-------------------------------
 	Object3d *playerObj2 = nullptr;
 	Model *playerModel2 = nullptr;
@@ -124,6 +126,8 @@ public:
 	float enemyFrame;
 	float enemyMaxFrame;
 	float enemyX;
+	int lazerCount = 0;
+	
 	//弾幕
 	float bullAngle[EnemyBulletNum];
 	float EnemybullTimer;
@@ -132,7 +136,8 @@ public:
 	bool barrageHit = 0;
 	bool pressHit = 0;
 	bool playerBulletHit = 0;
-	int bossHP = 30;
+	float playersHP = 5;
+	float bosssHP = 30;
 
 	int active;
 
