@@ -706,8 +706,6 @@ void GameScene::Draw()
 	if (BulletFlag == true) {
 		playerObj->Draw();
 	}
-
-
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		if (EnemyBulletFlag[i] == true && active == 1) {
