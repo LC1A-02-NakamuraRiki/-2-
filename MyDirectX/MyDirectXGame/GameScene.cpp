@@ -766,7 +766,9 @@ void GameScene::Draw()
 	{
 		pressObj->Draw();
 	}
-	playerObj2->Draw();
+	if (bossHP != 0) {
+		playerObj2->Draw();
+	}
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
