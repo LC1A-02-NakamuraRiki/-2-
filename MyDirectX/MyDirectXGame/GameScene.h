@@ -9,6 +9,7 @@
 #include "DebugText.h"
 #include "Audio.h"
 #include "Model.h"
+#include "Collision.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,17 +65,91 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	Sprite *spriteBG = nullptr;
-	
-	Object3d *playerObj = nullptr;
+	Sprite *title = nullptr;
+	Sprite *clear = nullptr;
+	Sprite *gameover = nullptr;
+	Sprite *warningMark = nullptr;
+	//弾-------------------------------
+	Object3d* playerObj = nullptr ;
 	Model *playerModel = nullptr;
+	//敵の弾-------------------------------
+	static const int EnemyBulletNum = 100;
+	Object3d* EnemyBullet[EnemyBulletNum] = { nullptr };
+	Model* EnemyBulletModel = nullptr;
+	Object3d* EnemyBullet2 = { nullptr };
 
+	//ボス-------------------------------
 	Object3d *playerObj2 = nullptr;
 	Model *playerModel2 = nullptr;
-
+	//背景-------------------------------
+	Object3d *skydomeObj = nullptr;
+	Model *skydomeModel = nullptr;
+	//プレスの頭
+	Object3d *pressObj = nullptr;
+	Model *pressModel = nullptr;
 public:
+	//シーン変数
+	int sceneNo = 0;
+	float nowTime = 0;
+	float endTime = 1.0;
+	float timeRate = 0;
+	bool isChange = false;
+	//カメラ変数
 	float angle = 0.0f;
+<<<<<<< HEAD
 	bool BulletFlag = false;
 	float rat;
 	float speed;
+=======
+	//自機の弾変数
+	bool BulletFlag;
+	float frame;
+	float maxframe;
+	float x;
+	const float PI = 3.141592;
+	//スロー変数
+	float slowValue = 1.0f;
+	bool isSlow = 0;
+	//エネミー弾変数
+	bool EnemyBulletFlag[EnemyBulletNum];
+	bool EnemyBulletFlag2;
+	float EnemyBulletFrame;
+	float EnemyBulletMaxframe;
+	float EnemyBulletFrame2;
+	float EnemyBulletMaxframe2;
+	//レーザー
+	int enemyMoveFlag;
+	float enemyFrame;
+	float enemyMaxFrame;
+	float enemyX;
+	//弾幕
+	float bullAngle[EnemyBulletNum];
+	float EnemybullTimer;
+	//当たり判定
+	bool laserHit = 0;
+	bool barrageHit = 0;
+	bool pressHit = 0;
+	bool playerBulletHit = 0;
+	int bossHP = 30;
+
+	int active;
+
+	//シェイク
+	bool shakeFlag;
+	float shakeX;
+	float shakeY;
+	float shakeZ;
+	float shakeCount;
+
+	//プレス
+	int playerStopCount = 0;
+	bool nowPressAttack = 0;
+	int pressCount = 0;
+
+	//
+	float lFrame;
+	float maxlFrame;
+	float lAngleY;
+>>>>>>> master
 };
 
