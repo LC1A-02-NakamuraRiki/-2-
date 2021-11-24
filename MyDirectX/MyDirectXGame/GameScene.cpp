@@ -300,14 +300,6 @@ void GameScene::Update()
 		if (frame > maxframe) {
 			BulletFlag = false;
 		}
-		/*
-
-		if (shakeFlag == true)
-		{
-			position2.x -= shakeX;
-			position2.y -= shake;
-			position2.x -= shakeX;
-		}*/
 
 		/*---------------------“G‚Ì’e----------------------*/
 		float AngleX = position2.x - f.x;
