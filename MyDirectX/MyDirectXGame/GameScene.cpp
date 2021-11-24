@@ -338,9 +338,13 @@ void GameScene::Update()
 
 					if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
 					{
-						lAngleY = angle * 0.5f;
+						lAngleY += angle * 0.5f;
 						EnemyBullet2->SetRotation({ 0,lAngleY,0 });
 						lFrame = 0;
+					}
+					if (lAngleY == angle)
+					{
+						EnemyBulletFlag2 = false;
 					}
 				}
 			}
