@@ -662,11 +662,6 @@ void GameScene::Update()
 		animationCount = 0;
 
 		angle = 0;
-
-
-		
-
-
 	
 		playerObj->SetPosition({ -5.0f, 0.0f, -100.0f });
 		playerObj->SetScale({ 0.5f,0.5f,0.5f });
@@ -755,15 +750,20 @@ void GameScene::Draw()
 	if (BulletFlag == true) {
 		playerObj->Draw();
 	}
-	for (int i = 0; i < EnemyBulletNum; i++)
+
+	if (sceneNo == 1)
 	{
-		if (EnemyBulletFlag[i] == true && active == 1) {
-			EnemyBullet[i]->Draw();
-		}
-		if (EnemyBulletFlag2 == true && active == 0) {
-			EnemyBullet2->Draw();
+		for (int i = 0; i < EnemyBulletNum; i++)
+		{
+			if (EnemyBulletFlag[i] == true && active == 1) {
+				EnemyBullet[i]->Draw();
+			}
+			if (EnemyBulletFlag2 == true && active == 0) {
+				EnemyBullet2->Draw();
+			}
 		}
 	}
+	
 	if (nowPressAttack == 1)
 	{
 		pressObj->Draw();
