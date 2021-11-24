@@ -621,7 +621,46 @@ void GameScene::Update()
 	{
 		debugText.Print("gameover", 20, 20, 1.5f);
 		sceneNo = 0;
+
+		BulletFlag = false;
+
+		for (int i = 0; i < EnemyBulletNum; i++)
+		{
+			EnemyBulletFlag[i] = false;
+			EnemyBulletFlag2 = true;
+		}
+
+		frame = 0;
+		maxframe = 50;
+		EnemyBulletFrame = 0;
+		EnemyBulletMaxframe = 100;
+		EnemyBulletFrame2 = 0;
+		EnemyBulletMaxframe2 = 100;
+
+		EnemybullTimer = 120;
+		srand(time(NULL));
+
+		enemyMoveFlag = 0;
+		enemyFrame = 0;
+		enemyMaxFrame = 100;
+
+		bossHP = 30;
+
+		active = 0;
+
+		shakeCount = 0;
+		shakeX = 0.0f;
+		shakeY = 0.0f;
+		shakeZ = 0.0f;
+		shakeFlag = false;
+
+		lFrame = 0;
+		maxlFrame = 50;
+
+		animationTimer = 0;
+		animationCount = 0;
 	}
+	
 }
 
 void GameScene::Draw()
