@@ -429,8 +429,8 @@ void GameScene::Update()
 					if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 					{
 						EnemyBulletFlag[i] = true;
-						enemyBulletPosition[i].z = position2.z - 9;
-						enemyBulletPosition[i].x = position2.x - 5;
+						enemyBulletPosition[i].z = position2.z;
+						enemyBulletPosition[i].x = position2.x;
 						bullAngle[i] = rand() + 1000 / 10000.f * (PI * 2);
 
 					}
@@ -438,8 +438,8 @@ void GameScene::Update()
 
 				if (EnemyBulletFlag[i] == true)
 				{
-					enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
-					enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
+					enemyBulletPosition[i].x += cos(bullAngle[i]) * 0.5 * slowValue;
+					enemyBulletPosition[i].z += sin(bullAngle[i]) * 0.5 * slowValue;
 
 					if (enemyBulletPosition[i].z > 50.0f || enemyBulletPosition[i].z < -50.0f
 						|| enemyBulletPosition[i].x > 50.0f || enemyBulletPosition[i].x < -50.0f)
