@@ -40,7 +40,7 @@ GameScene::GameScene()
 	shakeFlag = false;
 
 	lFrame = 0;
-	maxlFrame = 30;
+	maxlFrame = 50;
 }
 
 GameScene::~GameScene()
@@ -324,6 +324,7 @@ void GameScene::Update()
 			} else {
 				shakeFlag = true;
 				EnemyBulletFlag2 = false;
+				lFrame = 0;
 				if (shakeCount >= 20)
 				{
 					active = 1;
