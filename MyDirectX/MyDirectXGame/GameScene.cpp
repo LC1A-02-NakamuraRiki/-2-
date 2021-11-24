@@ -660,6 +660,55 @@ void GameScene::Update()
 
 		animationTimer = 0;
 		animationCount = 0;
+
+		angle = 0;
+
+
+		
+
+
+	
+		playerObj->SetPosition({ -5.0f, 0.0f, -100.0f });
+		playerObj->SetScale({ 0.5f,0.5f,0.5f });
+		playerObj->Update();
+
+
+		
+		for (int i = 0; i < EnemyBulletNum; i++)
+		{
+		
+			EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
+			EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
+			EnemyBullet[i]->Update();
+
+		
+			
+			EnemyBullet2->SetPosition({ 0.0f, 0.3f, 0.0f });
+			EnemyBullet2->SetScale({ 0.5f,0.5f,30.0f });
+			EnemyBullet2->Update();
+		}
+
+	
+	
+		
+		playerObj2->SetRotation({ 0.0f,0.0f,0.0f });
+		playerObj2->SetPosition({ 0.0f, -4.0f, 0.0f });
+		playerObj2->SetScale({ 5.0f,5.0f,5.0f });
+		playerObj2->Update();
+
+	
+	
+		
+		pressObj->SetRotation({ 0.0f,0.0f,0.0f });
+		pressObj->SetPosition({ 0.0f, -4.0f, 0.0f });
+		pressObj->SetScale({ 5.0f,5.0f,5.0f });
+		pressObj->Update();
+
+	
+	
+		
+		skydomeObj->SetScale({ 5.0f,5.0f,5.0f });
+		skydomeObj->Update();
 	}
 	
 }
