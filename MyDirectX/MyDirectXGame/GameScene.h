@@ -65,7 +65,7 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	Sprite *spriteBG = nullptr;
-	Sprite *title = nullptr;
+	Sprite* title[12] = { nullptr };
 	Sprite *clear = nullptr;
 	Sprite *gameover = nullptr;
 	Sprite *warningMark = nullptr;
@@ -145,5 +145,10 @@ public:
 	float lFrame;
 	float maxlFrame;
 	float lAngleY;
+
+	//タイトル
+	float animationTimer;
+	int animationCount;
+
 };
 

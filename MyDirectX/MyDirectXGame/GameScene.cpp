@@ -41,12 +41,17 @@ GameScene::GameScene()
 
 	lFrame = 0;
 	maxlFrame = 50;
+
+	animationTimer = 0;
+	animationCount = 0;
 }
 
 GameScene::~GameScene()
 {
 	safe_delete(spriteBG);
-	safe_delete(title);
+	for (int i = 0; i < 12; i++) {
+		safe_delete(title[i]);
+	}
 	safe_delete(clear);
 	safe_delete(warningMark);
 	safe_delete(playerModel);
@@ -92,28 +97,76 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(2, L"Resources/title.png")) {
+
+	if (!Sprite::LoadTexture(2, L"Resources/clear.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(3, L"Resources/clear.png")) {
+	if (!Sprite::LoadTexture(3, L"Resources/gameover.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(4, L"Resources/gameover.png")) {
+	if (!Sprite::LoadTexture(4, L"Resources/warningMark.png")) {
 		assert(0);
 		return;
 	}
-	if (!Sprite::LoadTexture(5, L"Resources/warningMark.png")) {
+	if (!Sprite::LoadTexture(5, L"Resources/title1.png")) {
 		assert(0);
 		return;
 	}
+	if (!Sprite::LoadTexture(6, L"Resources/title2.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(7, L"Resources/title3.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(8, L"Resources/title4.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(9, L"Resources/title5.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(10, L"Resources/title6.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(11, L"Resources/title7.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(12, L"Resources/title8.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(13, L"Resources/title9.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(14, L"Resources/title10.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(15, L"Resources/title11.png")) {
+		assert(0);
+		return;
+	}
+	if (!Sprite::LoadTexture(16, L"Resources/title12.png")) {
+		assert(0);
+		return;
+	}
+
 	//// 背景スプライト生成
 	spriteBG = Sprite::Create(1, { 0.0f,0.0f });
-	title = Sprite::Create(2, { 0.0f,0.0f });
-	clear = Sprite::Create(3, { 0.0f,0.0f });
-	gameover = Sprite::Create(4, { 0.0f,0.0f });
-	warningMark = Sprite::Create(5, { 0.0f,0.0f });
+	for (int i = 0; i < 12; i++) {
+		title[i] = Sprite::Create(5+i, { 0.0f,0.0f });
+	}
+	clear = Sprite::Create(2, { 0.0f,0.0f });
+	gameover = Sprite::Create(3, { 0.0f,0.0f });
+	warningMark = Sprite::Create(4, { 0.0f,0.0f });
 	// 3Dオブジェクト生成
 
 
@@ -230,6 +283,17 @@ void GameScene::Update()
 		{
 			EnemyBullet[i]->Update();
 			EnemyBullet2->Update();
+		}
+		//アニメーション
+		animationTimer++;
+		if(animationTimer >= 5)
+		{
+			animationCount++;
+			animationTimer = 0;
+			if(animationCount == 11)
+			{
+				animationCount=0;
+			}
 		}
 	} else if (sceneNo == 1)
 	{
@@ -422,6 +486,7 @@ void GameScene::Update()
 			position2.z += shakeY;
 			shakeCount++;
 		}
+		
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 8;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
@@ -630,7 +695,8 @@ void GameScene::Draw()
 	Sprite::PreDraw(cmdList);
 	if (sceneNo == 0)
 	{
-		title->Draw();
+		title[animationCount]->Draw();
+		
 	} else if (sceneNo == 1)
 	{
 		if (nowPressAttack == 1)
