@@ -37,7 +37,7 @@ GameScene::GameScene()
 	shakeX = 0.0f;
 	shakeY = 0.0f;
 	shakeZ = 0.0f;
-	shakeFlag = true;
+	shakeFlag = false;
 }
 
 GameScene::~GameScene()
@@ -115,14 +115,14 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 
 
 	playerModel = playerModel->CreateFromObject("bullet");
-	
-	
-		playerObj = Object3d::Create();
-		playerObj->LinkModel(playerModel);
-		playerObj->SetPosition({ -5.0f, 0.0f, -100.0f });
-		playerObj->SetScale({ 0.5f,0.5f,0.5f });
-		playerObj->Update();
-	
+
+
+	playerObj = Object3d::Create();
+	playerObj->LinkModel(playerModel);
+	playerObj->SetPosition({ -5.0f, 0.0f, -100.0f });
+	playerObj->SetScale({ 0.5f,0.5f,0.5f });
+	playerObj->Update();
+
 
 	EnemyBulletModel = EnemyBulletModel->CreateFromObject("bullet");
 	for (int i = 0; i < EnemyBulletNum; i++)
@@ -169,7 +169,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 
 void GameScene::Update()
 {
-	
+
 	//カメラの位置取得--------------------------------
 	XMFLOAT3 cameraTarget = Object3d::GetTarget();
 	XMFLOAT3 cameraEye = Object3d::GetEye();
@@ -178,9 +178,9 @@ void GameScene::Update()
 	GetCursorPos(&mousePos);
 	//弾の位置取得-----------------------------------
 	XMFLOAT3 position;
-	
+
 	position = playerObj->GetPosition();
-	
+
 	//敵の弾取得-------------------------------------
 	XMFLOAT3 enemyBulletPosition[EnemyBulletNum];
 	XMFLOAT3 enemyBulletPosition2[EnemyBulletNum];
@@ -189,7 +189,7 @@ void GameScene::Update()
 		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
 		enemyBulletPosition2[i] = EnemyBullet2[i]->GetPosition();
 	}
-	
+
 
 	//スロー処理--------------------------------
 	if (sceneNo == 0) {
@@ -219,7 +219,7 @@ void GameScene::Update()
 			nowTime = 0;
 			timeRate = 0;
 		}
-		
+
 		playerObj2->Update();
 		skydomeObj->Update();
 		playerObj->Update();
@@ -228,24 +228,21 @@ void GameScene::Update()
 			EnemyBullet[i]->Update();
 			EnemyBullet2[i]->Update();
 		}
-	}
-	else if (sceneNo == 1)
+	} else if (sceneNo == 1)
 	{
 		playerStopCount++;
-		
+
 		if (input->TriggerKey(DIK_SPACE) && isSlow == 0)
 		{
 			isSlow = 1;
-		}
-		else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
+		} else if (input->TriggerKey(DIK_SPACE) && isSlow == 1)
 		{
 			isSlow = 0;
 		}
 		if (isSlow == 1 && slowValue > 0.25)
 		{
 			slowValue -= 0.25;
-		}
-		else if (isSlow == 0 && slowValue < 1.0)
+		} else if (isSlow == 0 && slowValue < 1.0)
 		{
 			slowValue += 0.25;
 		}
@@ -256,7 +253,7 @@ void GameScene::Update()
 		//angleラジアンだけy軸まわりに回転。半径は-100
 		XMMATRIX rotM = XMMatrixRotationY(XMConvertToRadians(angle));
 		XMVECTOR v = XMVector3TransformNormal(v0, rotM);
-		XMVECTOR bossTarget = { 0,0,0};
+		XMVECTOR bossTarget = { 0,0,0 };
 		XMVECTOR v3 = bossTarget + v;
 		XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
@@ -279,27 +276,27 @@ void GameScene::Update()
 		}
 
 		//弾の移動-----------------------------------------------------------------
-		
-			if (input->TriggerMouse(0)) {
-				if (BulletFlag == false ) {
-					BulletFlag = true;
-					frame = 0;
-					position.x = f.x;
-					position.z = f.z + 300;
-					
-				}
-			}
 
-			if (BulletFlag == true) {
-				if (frame >= 0 && frame <= maxframe) {
-					x = static_cast<float>(frame) / static_cast<float>(maxframe);
-					position.x = f.x + ((position2.x ) - f.x) * (sin(x * PI / 2));
-					position.z = f.z + ((position2.z ) - f.z) * (sin(x * PI / 2));
-				}
+		if (input->TriggerMouse(0)) {
+			if (BulletFlag == false) {
+				BulletFlag = true;
+				frame = 0;
+				position.x = f.x;
+				position.z = f.z + 300;
+
 			}
-			if (frame > maxframe) {
-				BulletFlag = false;
+		}
+
+		if (BulletFlag == true) {
+			if (frame >= 0 && frame <= maxframe) {
+				x = static_cast<float>(frame) / static_cast<float>(maxframe);
+				position.x = f.x + ((position2.x) - f.x) * (sin(x * PI / 2));
+				position.z = f.z + ((position2.z) - f.z) * (sin(x * PI / 2));
 			}
+		}
+		if (frame > maxframe) {
+			BulletFlag = false;
+		}
 		/*
 
 		if (shakeFlag == true)
@@ -317,13 +314,16 @@ void GameScene::Update()
 		{
 		case 0:
 			//レーザー--------------------------------------------------------------
-			
+
 			if (Angle <= 1.0 && Angle >= -1.0)
 			{
 				enemyMoveFlag = 1;
-			}
-			else {
-				active = 1;
+			} else {
+				shakeFlag = true;
+				if (shakeCount >= 20)
+				{
+					active = 1;
+				}
 			}
 			for (int i = 0; i < EnemyBulletNum; i++)
 			{
@@ -355,6 +355,7 @@ void GameScene::Update()
 			break;
 
 		case 1:
+
 			//弾幕--------------------------------------------
 			for (int i = 0; i < EnemyBulletNum; i++)
 			{
@@ -389,16 +390,16 @@ void GameScene::Update()
 				{
 					active = 0;
 				}
-				
+
 			}
 			break;
 		case3:
-			
+
 			break;
 		default:
 			break;
 		}
-		
+
 		//揺れ-------------------------------------------
 		if (shakeCount > 20)
 		{
@@ -415,30 +416,21 @@ void GameScene::Update()
 		{
 			shakeX = rand() % 5 - 2.5;
 			shakeY = rand() % 5 - 2.5;
-			//shakeZ = rand() % 10 - 5;
 
 			position2.x += shakeX;
-			position2.y += shakeY;
-			//position2.z += shakeZ;
+			position2.z += shakeY;
 			shakeCount++;
 		}
-
-		/*if (shakeFlag == true)
-		{
-			position2.x -= shakeX;
-			position2.y -= shakeY;
-			position2.z -= shakeZ;
-		}*/
 		//カメラY軸に対する首振り---------------------------
 		float mouseAngle = ((1080 - mousePos.y) - 540) * 8;
 		cameraTarget.y = XMConvertToRadians(mouseAngle);
 		Object3d::SetTarget(cameraTarget);
 
 		//ポジションをセット-----------------
-		
+
 		playerObj->SetPosition(position);
 		playerObj->Update();
-		
+
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
 			EnemyBullet[i]->SetPosition(enemyBulletPosition[i]);
@@ -456,7 +448,7 @@ void GameScene::Update()
 		frame += 1 * slowValue;
 		enemyFrame += 1 * slowValue;
 		EnemybullTimer -= 1 * slowValue;
-		
+
 		//デバッグテキスト-------------------
 		char str[256];
 		sprintf_s(str, "%f  position %f %f, flag = %d %f HP = %d", enemyFrame, position2.z, position2.x, enemyMoveFlag, shakeCount, bossHP);
@@ -468,7 +460,7 @@ void GameScene::Update()
 			XMFLOAT3 pressPos = pressObj->GetPosition();
 			XMFLOAT3 bossRotation = pressObj->GetRotation();
 			pressCount += 1 * slowValue;
-			
+
 			if (pressCount <= 1)
 			{
 				pressPos.y = 30;
@@ -478,8 +470,7 @@ void GameScene::Update()
 				pressPos.x = cameraEye.x;
 				pressPos.z = cameraEye.z;
 				bossRotation.y += 5 * slowValue;
-			}
-			else if (pressCount >= 50)
+			} else if (pressCount >= 50)
 			{
 				if (pressPos.y >= -8)
 				{
@@ -498,53 +489,53 @@ void GameScene::Update()
 			pressObj->Update();
 		}
 
-			playerBulletHit = Collision::ChenkSphere2Sphere(position.x, position.y, position.z, position2.x, position2.y, position2.z, 1.0f, 10.0f);
-			if (playerBulletHit == true && BulletFlag == true)
+		playerBulletHit = Collision::ChenkSphere2Sphere(position.x, position.y, position.z, position2.x, position2.y, position2.z, 1.0f, 10.0f);
+		if (playerBulletHit == true && BulletFlag == true)
+		{
+			playerBulletHit = false;
+			BulletFlag = false;
+			frame = 0;
+			bossHP -= 1;
+			debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+		}
+
+		for (int i = 0; i < EnemyBulletNum; i++)
+		{
+			laserHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition2[i].x, enemyBulletPosition2[i].y, enemyBulletPosition2[i].z, 0.5f, 1.0f);
+			if (laserHit == true && enemyMoveFlag == true)
 			{
-				playerBulletHit = false;
-				BulletFlag = false;
-				frame = 0;
-				bossHP -= 1;
-				debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+				laserHit = false;
+				enemyMoveFlag = false;
+				//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
 			}
 
-			for (int i = 0; i < EnemyBulletNum; i++)
+			barrageHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition[i].x, enemyBulletPosition[i].y, enemyBulletPosition[i].z, 0.5f, 0.5f);
+			if (barrageHit == true && EnemyBulletFlag[i] == true)
 			{
-				laserHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition2[i].x, enemyBulletPosition2[i].y, enemyBulletPosition2[i].z, 0.5f, 1.0f);
-				if (laserHit == true &&  enemyMoveFlag == true)
-				{
-					laserHit = false;
-					enemyMoveFlag = false;
-					//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
-				}
+				barrageHit = false;
+				EnemyBulletFlag[i] = false;
+				//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+			}
+		}
+		XMFLOAT3 pressPos = pressObj->GetPosition();
+		XMFLOAT3 bossRotation = pressObj->GetRotation();
+		pressHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y - 3, cameraEye.z, pressPos.x, pressPos.y, pressPos.z, 1.5f, 1.5f);
+		if (pressHit == true && nowPressAttack == true)
+		{
+			bossHP--;
+			pressHit = false;
+			nowPressAttack = 0;
+			bossRotation.y = 0;
+			pressPos.y = 30;
+			pressCount = 0;
+			playerStopCount = 0;
+			debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
+		}
+		if (bossHP == 0)
+		{
+			sceneNo = 2;
+		}
 
-				barrageHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition[i].x, enemyBulletPosition[i].y, enemyBulletPosition[i].z, 0.5f, 0.5f);
-				if (barrageHit == true && EnemyBulletFlag[i] == true)
-				{
-					barrageHit = false;
-					EnemyBulletFlag[i] = false;
-					//debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
-				}
-			}
-			XMFLOAT3 pressPos = pressObj->GetPosition();
-			XMFLOAT3 bossRotation = pressObj->GetRotation();
-			pressHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y - 3, cameraEye.z, pressPos.x, pressPos.y, pressPos.z, 1.5f, 1.5f);
-			if (pressHit == true && nowPressAttack == true)
-			{
-				bossHP--;
-				pressHit = false;
-				nowPressAttack = 0;
-				bossRotation.y = 0;
-				pressPos.y = 30;
-				pressCount = 0;
-				playerStopCount = 0;
-				debugText.Print("EyeTarget:SPACE Q LCONTROL E", 20, 120 + 3, 1.5f);
-			}
-			if (bossHP == 0)
-			{
-				sceneNo = 2;
-			}
-		
 	} else if (sceneNo == 2)
 	{
 		debugText.Print("Clear", 20, 20, 1.5f);
@@ -604,11 +595,11 @@ void GameScene::Draw()
 
 	// 3Dオブクジェクトの描画
 	skydomeObj->Draw();
-	
+
 	if (BulletFlag == true) {
 		playerObj->Draw();
 	}
-	
+
 
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
