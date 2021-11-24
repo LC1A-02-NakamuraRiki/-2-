@@ -76,7 +76,7 @@ private: // メンバ変数
 	static const int EnemyBulletNum = 100;
 	Object3d* EnemyBullet[EnemyBulletNum] = { nullptr };
 	Model* EnemyBulletModel = nullptr;
-	Object3d* EnemyBullet2[EnemyBulletNum] = { nullptr };
+	Object3d* EnemyBullet2 = { nullptr };
 
 	//ボス-------------------------------
 	Object3d *playerObj2 = nullptr;
@@ -107,7 +107,7 @@ public:
 	bool isSlow = 0;
 	//エネミー弾変数
 	bool EnemyBulletFlag[EnemyBulletNum];
-	bool EnemyBulletFlag2[EnemyBulletNum];
+	bool EnemyBulletFlag2;
 	float EnemyBulletFrame;
 	float EnemyBulletMaxframe;
 	float EnemyBulletFrame2;
@@ -140,5 +140,9 @@ public:
 	int playerStopCount = 0;
 	bool nowPressAttack = 0;
 	int pressCount = 0;
+
+	//
+	float lFrame;
+	float maxlFrame;
 };
 

@@ -12,7 +12,7 @@ GameScene::GameScene()
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		EnemyBulletFlag[i] = false;
-		EnemyBulletFlag2[i] = false;
+		EnemyBulletFlag2 = true;
 	}
 
 	frame = 0;
@@ -38,6 +38,9 @@ GameScene::GameScene()
 	shakeY = 0.0f;
 	shakeZ = 0.0f;
 	shakeFlag = false;
+
+	lFrame = 0;
+	maxlFrame = 30;
 }
 
 GameScene::~GameScene()
@@ -56,7 +59,7 @@ GameScene::~GameScene()
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		safe_delete(EnemyBullet[i]);
-		safe_delete(EnemyBullet2[i]);
+		safe_delete(EnemyBullet2);
 	}
 
 	safe_delete(playerModel2);
@@ -132,11 +135,11 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 		EnemyBullet[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
 		EnemyBullet[i]->SetScale({ 0.5f,0.5f,0.5f });
 		EnemyBullet[i]->Update();
-		EnemyBullet2[i] = Object3d::Create();
-		EnemyBullet2[i]->LinkModel(EnemyBulletModel);
-		EnemyBullet2[i]->SetPosition({ -5.0f, 0.0f, 0.0f });
-		EnemyBullet2[i]->SetScale({ 0.5f,0.5f,0.5f });
-		EnemyBullet2[i]->Update();
+		EnemyBullet2 = Object3d::Create();
+		EnemyBullet2->LinkModel(EnemyBulletModel);
+		EnemyBullet2->SetPosition({ 0.0f, 0.3f, 0.0f });
+		EnemyBullet2->SetScale({ 0.5f,0.5f,30.0f });
+		EnemyBullet2->Update();
 	}
 
 	playerModel = playerModel2->CreateFromObject("temprobot");
@@ -183,11 +186,11 @@ void GameScene::Update()
 
 	//敵の弾取得-------------------------------------
 	XMFLOAT3 enemyBulletPosition[EnemyBulletNum];
-	XMFLOAT3 enemyBulletPosition2[EnemyBulletNum];
+	XMFLOAT3 enemyBulletPosition2;
 	for (int i = 0; i < EnemyBulletNum; i++)
 	{
 		enemyBulletPosition[i] = EnemyBullet[i]->GetPosition();
-		enemyBulletPosition2[i] = EnemyBullet2[i]->GetPosition();
+		enemyBulletPosition2 = EnemyBullet2->GetPosition();
 	}
 
 
@@ -226,7 +229,7 @@ void GameScene::Update()
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
 			EnemyBullet[i]->Update();
-			EnemyBullet2[i]->Update();
+			EnemyBullet2->Update();
 		}
 	} else if (sceneNo == 1)
 	{
@@ -315,7 +318,7 @@ void GameScene::Update()
 		case 0:
 			//レーザー--------------------------------------------------------------
 
-			if (Angle <= 1.0 && Angle >= -1.0)
+			if (Angle < 1.0 && Angle > -1.0)
 			{
 				enemyMoveFlag = 1;
 			} else {
@@ -329,27 +332,20 @@ void GameScene::Update()
 			{
 				if (enemyMoveFlag == 1)
 				{
-					if (EnemyBulletFlag2[i] == false && EnemyBulletFrame2 >= EnemyBulletMaxframe2)
+					if (EnemyBulletFlag2 == false && EnemyBulletFrame2 >= EnemyBulletMaxframe2)
 					{
-						EnemyBulletFlag2[i] = true;
-						enemyBulletPosition2[i].z = position2.z;
-						enemyBulletPosition2[i].x = position2.x;
+						EnemyBulletFlag2 = true;
+						enemyBulletPosition2.z = position2.z;
+						enemyBulletPosition2.x = position2.x;
 						enemyFrame = 0;
 						EnemyBulletFrame2 = 0;
 					}
 
-					if (EnemyBulletFlag2[i] == true && enemyFrame >= 0 && enemyFrame <= enemyMaxFrame)
+					if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
 					{
-						enemyX = static_cast<float>(enemyFrame) / static_cast<float>(enemyMaxFrame);
-						//enemyBulletPosition2[i].x = position2.x + (f.x - position2.x) * (sin(enemyX * PI / 2));
-						enemyBulletPosition2[i].z -= 2 * slowValue;
+						EnemyBullet2->SetRotation({ 0,angle,0 });
+						lFrame = 0;
 					}
-					if (enemyBulletPosition2[i].z <= -60)
-					{
-						EnemyBulletFlag2[i] = false;
-						enemyMoveFlag = 0;
-					}
-
 				}
 			}
 			break;
@@ -405,7 +401,7 @@ void GameScene::Update()
 		{
 			shakeCount = 0;
 			shakeFlag = false;
-			position2 = { 0,0,0 };
+			position2 = { 0,-4,0 };
 		}
 		if (shakeFlag == false)
 		{
@@ -435,8 +431,8 @@ void GameScene::Update()
 		{
 			EnemyBullet[i]->SetPosition(enemyBulletPosition[i]);
 			EnemyBullet[i]->Update();
-			EnemyBullet2[i]->SetPosition(enemyBulletPosition2[i]);
-			EnemyBullet2[i]->Update();
+			EnemyBullet2->SetPosition(enemyBulletPosition2);
+			EnemyBullet2->Update();
 		}
 		playerObj2->SetPosition(position2);
 		playerObj2->Update();
@@ -448,6 +444,7 @@ void GameScene::Update()
 		frame += 1 * slowValue;
 		enemyFrame += 1 * slowValue;
 		EnemybullTimer -= 1 * slowValue;
+		lFrame += 1 * slowValue;
 
 		//デバッグテキスト-------------------
 		char str[256];
@@ -501,7 +498,7 @@ void GameScene::Update()
 
 		for (int i = 0; i < EnemyBulletNum; i++)
 		{
-			laserHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition2[i].x, enemyBulletPosition2[i].y, enemyBulletPosition2[i].z, 0.5f, 1.0f);
+			laserHit = Collision::ChenkSphere2Sphere(cameraEye.x, cameraEye.y, cameraEye.z, enemyBulletPosition2.x, enemyBulletPosition2.y, enemyBulletPosition2.z, 0.5f, 1.0f);
 			if (laserHit == true && enemyMoveFlag == true)
 			{
 				laserHit = false;
@@ -606,8 +603,8 @@ void GameScene::Draw()
 		if (EnemyBulletFlag[i] == true && active == 1) {
 			EnemyBullet[i]->Draw();
 		}
-		if (EnemyBulletFlag2[i] == true && active == 0) {
-			EnemyBullet2[i]->Draw();
+		if (EnemyBulletFlag2 == true && active == 0) {
+			EnemyBullet2->Draw();
 		}
 	}
 	if (nowPressAttack == 1)
