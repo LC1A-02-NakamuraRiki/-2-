@@ -98,8 +98,6 @@ public:
 	float angle = 0.0f;
 	//©‹@‚Ì’e•Ï”
 	bool BulletFlag;
-	float shotTimer;
-	float maxshotTimer;
 	float frame;
 	float maxframe;
 	float x;

@@ -21,8 +21,7 @@ GameScene::GameScene()
 	EnemyBulletMaxframe = 100;
 	EnemyBulletFrame2 = 0;
 	EnemyBulletMaxframe2 = 100;
-	shotTimer = 120;
-	maxshotTimer = 300;
+
 	EnemybullTimer = 120;
 	srand(time(NULL));
 
@@ -163,7 +162,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	skydomeObj->Update();
 	//サウンド再生
 	//audio->PlayWave("Resources/Alarm01.wav");
-	audio->PlayBGM("Resources/Alarm01.wav", true);
+	audio->PlayBGM("Resources/Alarm01.wav", false);
 	audio->PlaySE("Resources/Alarm01.wav", false);
 	audio->StopBGM();
 }
@@ -282,12 +281,12 @@ void GameScene::Update()
 		//弾の移動-----------------------------------------------------------------
 		
 			if (input->TriggerMouse(0)) {
-				if (BulletFlag == false && shotTimer <= maxshotTimer) {
+				if (BulletFlag == false ) {
 					BulletFlag = true;
 					frame = 0;
 					position.x = f.x;
 					position.z = f.z + 300;
-					shotTimer = 0;
+					
 				}
 			}
 
@@ -453,7 +452,7 @@ void GameScene::Update()
 		//タイマー-------------------------
 		EnemyBulletFrame += 1 * slowValue;
 		EnemyBulletFrame2 += 1 * slowValue;
-		shotTimer += 1 * slowValue;
+
 		frame += 1 * slowValue;
 		enemyFrame += 1 * slowValue;
 		EnemybullTimer -= 1 * slowValue;
