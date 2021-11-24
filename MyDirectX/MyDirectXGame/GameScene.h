@@ -73,7 +73,7 @@ private: // ƒƒ“ƒo•Ï”
 	Object3d* playerObj = nullptr ;
 	Model *playerModel = nullptr;
 	//“G‚Ì’e-------------------------------
-	static const int EnemyBulletNum = 100;
+	static const int EnemyBulletNum = 60;
 	Object3d* EnemyBullet[EnemyBulletNum] = { nullptr };
 	Model* EnemyBulletModel = nullptr;
 	Object3d* EnemyBullet2 = { nullptr };

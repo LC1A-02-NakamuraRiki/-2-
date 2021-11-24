@@ -430,8 +430,8 @@ void GameScene::Update()
 					if (EnemyBulletFlag[i] == false && EnemyBulletFrame >= EnemyBulletMaxframe)
 					{
 						EnemyBulletFlag[i] = true;
-						enemyBulletPosition[i].z = position2.z - 9;
-						enemyBulletPosition[i].x = position2.x - 5;
+						enemyBulletPosition[i].z = position2.z;
+						enemyBulletPosition[i].x = position2.x;
 						bullAngle[i] = rand() + 1000 / 10000.f * (PI * 2);
 
 					}
@@ -439,8 +439,8 @@ void GameScene::Update()
 
 				if (EnemyBulletFlag[i] == true)
 				{
-					enemyBulletPosition[i].x += cos(bullAngle[i]) * 2 * slowValue;
-					enemyBulletPosition[i].z += sin(bullAngle[i]) * 2 * slowValue;
+					enemyBulletPosition[i].x += cos(bullAngle[i]) * 0.5 * slowValue;
+					enemyBulletPosition[i].z += sin(bullAngle[i]) * 0.5 * slowValue;
 
 					if (enemyBulletPosition[i].z > 50.0f || enemyBulletPosition[i].z < -50.0f
 						|| enemyBulletPosition[i].x > 50.0f || enemyBulletPosition[i].x < -50.0f)
@@ -622,7 +622,46 @@ void GameScene::Update()
 	{
 		debugText.Print("gameover", 20, 20, 1.5f);
 		sceneNo = 0;
+
+		BulletFlag = false;
+
+		for (int i = 0; i < EnemyBulletNum; i++)
+		{
+			EnemyBulletFlag[i] = false;
+			EnemyBulletFlag2 = true;
+		}
+
+		frame = 0;
+		maxframe = 50;
+		EnemyBulletFrame = 0;
+		EnemyBulletMaxframe = 100;
+		EnemyBulletFrame2 = 0;
+		EnemyBulletMaxframe2 = 100;
+
+		EnemybullTimer = 120;
+		srand(time(NULL));
+
+		enemyMoveFlag = 0;
+		enemyFrame = 0;
+		enemyMaxFrame = 100;
+
+		bossHP = 30;
+
+		active = 0;
+
+		shakeCount = 0;
+		shakeX = 0.0f;
+		shakeY = 0.0f;
+		shakeZ = 0.0f;
+		shakeFlag = false;
+
+		lFrame = 0;
+		maxlFrame = 50;
+
+		animationTimer = 0;
+		animationCount = 0;
 	}
+	
 }
 
 void GameScene::Draw()
