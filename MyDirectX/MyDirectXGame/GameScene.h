@@ -144,5 +144,6 @@ public:
 	//
 	float lFrame;
 	float maxlFrame;
+	float lAngleY;
 };
 

@@ -323,6 +323,7 @@ void GameScene::Update()
 				enemyMoveFlag = 1;
 			} else {
 				shakeFlag = true;
+				EnemyBulletFlag2 = false;
 				if (shakeCount >= 20)
 				{
 					active = 1;
@@ -339,11 +340,13 @@ void GameScene::Update()
 						enemyBulletPosition2.x = position2.x;
 						enemyFrame = 0;
 						EnemyBulletFrame2 = 0;
+						lFrame = 0;
 					}
 
 					if (EnemyBulletFlag2 == true && lFrame == maxlFrame)
 					{
-						EnemyBullet2->SetRotation({ 0,angle,0 });
+						lAngleY = angle * 0.5f;
+						EnemyBullet2->SetRotation({ 0,lAngleY,0 });
 						lFrame = 0;
 					}
 				}
