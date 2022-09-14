@@ -441,12 +441,12 @@ void GameScene::Update()
 		XMVECTOR v = XMVector3TransformNormal(v0, rotM);
 		XMVECTOR bossTarget = { 0,0,0 };
 		XMVECTOR v3 = bossTarget + v;
-		XMFLOAT3 f = { v3.m128_f32[0], v3.m128_f32[1], v3.m128_f32[2] };
+		XMFLOAT3 f = { v.m128_f32[0], v.m128_f32[1], v.m128_f32[2] };
 		cameraTarget = { bossTarget.m128_f32[0], bossTarget.m128_f32[1], bossTarget.m128_f32[2] };
 		cameraEye = f;
 
 		Object3d::SetTarget(cameraTarget);
-		Object3d::SetEye(cameraEye);
+		Object3d::SetEye({angle - f.x, 0, 0});
 
 		// ƒJƒƒ‰ˆÚ“®
 		if (input->PushKey(DIK_D) || input->PushKey(DIK_A))
@@ -455,6 +455,8 @@ void GameScene::Update()
 			if (input->PushKey(DIK_D)) { angle -= 2.0f * slowValue; } else if (input->PushKey(DIK_A)) { angle += 2.0f * slowValue; }
 
 		}
+
+		
 
 		if (playerStopCount > 80)
 		{
